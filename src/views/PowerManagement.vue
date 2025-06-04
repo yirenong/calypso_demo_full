@@ -1,6 +1,8 @@
-<!-- src/views/BuildingManagement.vue -->
+<!-- src/views/PowerManagement.vue -->
 <template>
-    <div class="building-management-container">
+    <div class="power-management-container">
+        <!-- ─────────────────────────────────────────────────────────────────────────── -->
+        <!-- 1) PAGE HEADER -->
         <div class="page-header">
             <h2 class="page-title">Power Management</h2>
             <nav class="breadcrumb">
@@ -9,7 +11,9 @@
                 <span>Power Management</span>
             </nav>
         </div>
-        <!-- Tab Navigation -->
+
+        <!-- ─────────────────────────────────────────────────────────────────────────── -->
+        <!-- 2) TAB NAVIGATION -->
         <div class="tab-nav">
             <button :class="{ active: currentTab === 'chiller' }" @click="currentTab = 'chiller'">
                 Chiller Plant Energy
@@ -22,71 +26,139 @@
             </button>
         </div>
 
-        <!-- Chiller Plant Energy Tab -->
+        <!-- ─────────────────────────────────────────────────────────────────────────── -->
+        <!-- 3) CHILLER PLANT ENERGY TAB -->
         <div v-if="currentTab === 'chiller'" class="tab-content">
-            <h2>Chiller Plant Energy</h2>
-            <div class="cards-grid">
-                <div v-for="(type, idx) in chillerTypes" :key="idx" class="card-wrapper"
-                    :class="{ 'value-card': isMetric(type) }" :style="generateStyle(type)">
+            <h2 class="tab-heading">Chiller Plant Energy</h2>
+
+            <!-- ─── Top Row: Four Metric Cards ────────────────────────────────────────── -->
+            <div class="chiller-top-grid">
+                <div v-for="(type, idx) in chillerTopMetrics" :key="'chiller-top-' + idx"
+                    class="card-wrapper value-card">
                     <component :is="componentMap[type]" v-bind="generateProps(type)" />
+                </div>
+            </div>
+
+            <!-- ─── Middle Row: 2 Pies | 1 Mini‐Bar | 1 Stacked Bar ──────────────────── -->
+            <div class="chiller-mid-grid">
+                <!-- 1) Load Distribution (Pie) -->
+                <div class="card-wrapper chart-card">
+                    <component :is="componentMap['LoadDistPie']" v-bind="generateProps('LoadDistPie')" />
+                </div>
+
+                <!-- 2) Tenant Usage (Mini Bar) -->
+                <div class="card-wrapper mini-bar-card">
+                    <component :is="componentMap['TenantUsageMiniBar']" v-bind="generateProps('TenantUsageMiniBar')" />
+                </div>
+
+                <!-- 3) Electrical Intake (Stacked Bar) -->
+                <div class="card-wrapper chart-card">
+                    <component :is="componentMap['ElectricalIntakeBar']"
+                        v-bind="generateProps('ElectricalIntakeBar')" />
+                </div>
+
+                <!-- 4) Air-side Energy (Pie) -->
+                <div class="card-wrapper chart-card">
+                    <component :is="componentMap['AirsideEnergyDistPie']"
+                        v-bind="generateProps('AirsideEnergyDistPie')" />
+                </div>
+            </div>
+
+            <!-- ─── Bottom Row: 4 Equal‐Width Chart Cards (no overflow) ──────────────── -->
+            <div class="chiller-bottom-grid">
+                <!-- 1) System RT Chart -->
+                <div class="card-wrapper chart-card">
+                    <component :is="componentMap['SystemRTGraph']" v-bind="generateProps('SystemRTGraph')" />
+                </div>
+
+                <!-- 2) System kW Chart -->
+                <div class="card-wrapper chart-card">
+                    <component :is="componentMap['SystemKWGraph']" v-bind="generateProps('SystemKWGraph')" />
+                </div>
+
+                <!-- 3) System kW/RT Chart -->
+                <div class="card-wrapper chart-card">
+                    <component :is="componentMap['SystemKWRTGraph']" v-bind="generateProps('SystemKWRTGraph')" />
+                </div>
+
+                <!-- 4) Heat Balance Chart -->
+                <div class="card-wrapper chart-card">
+                    <component :is="componentMap['HeatBalanceGraph']" v-bind="generateProps('HeatBalanceGraph')" />
                 </div>
             </div>
         </div>
 
-        <!-- Campus Electrical Energy Tab -->
+        <!-- ─────────────────────────────────────────────────────────────────────────── -->
+        <!-- 4) CAMPUS ELECTRICAL ENERGY TAB -->
         <div v-if="currentTab === 'campus'" class="tab-content">
-            <h2>Campus Electrical Energy</h2>
+            <h2 class="tab-heading">Campus Electrical Energy</h2>
 
             <!-- Metrics Row -->
             <div class="cards-grid">
-                <div v-for="(type, idx) in campusMetricTypes" :key="idx" class="card-wrapper value-card">
+                <div v-for="(type, idx) in campusMetricTypes" :key="'campus-metric-' + idx"
+                    class="card-wrapper value-card">
                     <component :is="componentMap[type]" v-bind="generateProps(type)" />
                 </div>
             </div>
 
             <!-- Charts Row -->
             <div class="cards-grid">
-                <div v-for="(type, idx) in campusChartTypes" :key="idx" class="card-wrapper chart-card"
-                    :style="generateStyle(type)">
+                <div v-for="(type, idx) in campusChartTypes" :key="'campus-chart-' + idx"
+                    class="card-wrapper chart-card" :style="generateStyle(type)">
                     <component :is="componentMap[type]" v-bind="generateProps(type)" />
                 </div>
             </div>
         </div>
 
-        <!-- Download Data Tab -->
+        <!-- ─────────────────────────────────────────────────────────────────────────── -->
+        <!-- 5) DOWNLOAD DATA TAB -->
         <div v-if="currentTab === 'download'" class="tab-content">
-            <h2>Download Full Dataset (CSV)</h2>
+            <h2 class="tab-heading">Download Full Dataset (CSV)</h2>
             <button class="download-button" @click="downloadCSV">
                 <i class="fas fa-download"></i>
                 <span>Download CSV</span>
             </button>
             <p class="note">
-                This CSV will contain one row per “type” (metric or chart), along
-                with its latest value or last‐7‐days data.
+                The CSV contains one row per “type” (metric or chart), along with its
+                latest value or last‐7‐days data.
             </p>
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref, watch, onMounted, nextTick } from 'vue'
+import { ref } from 'vue'
 import BarChartCard from '../components/BarChartCard.vue'
 import LineChartCard from '../components/LineChartCard.vue'
 import PieChartCard from '../components/PieChartCard.vue'
 import ValueCard from '../components/ValueCard.vue'
 
-// 1) Define all “types” and groupings exactly as before
+// 1) Types for “Chiller Plant Energy”
 const chillerTypes = [
     'SystemRTMetric',
     'SystemKWMetric',
     'SystemKWRTMetric',
     'HeatBalanceMetric',
+    'ChillerEfficiency',
+    'ChillerCOP',
+    'LoadDistPie',
+    'TenantUsageMiniBar',
+    'ElectricalIntakeBar',
+    'AirsideEnergyDistPie',
     'SystemRTGraph',
     'SystemKWGraph',
     'SystemKWRTGraph',
     'HeatBalanceGraph'
 ]
 
+const chillerTopMetrics = [
+    'SystemRTMetric',
+    'SystemKWMetric',
+    'SystemKWRTMetric',
+    'HeatBalanceMetric'
+]
+
+// 2) Types for “Campus Electrical Energy”
 const campusMetricTypes = [
     'ElecIncoming',
     'ElecUsage',
@@ -103,45 +175,75 @@ const campusChartTypes = [
     'EnergyUsageDistBar',
     'AirsideEnergyDistBar',
     'EnergySourceDistPie',
-    'EnergyUsageDistPie',
+    'EnergyUsageDistPie'
 ]
 
-// 2) Friendly labels
+// 3) Friendly labels
 const labelMap = {
-    SystemRTGraph: 'System RT Chart',
-    SystemRTMetric: 'System RT Now',
-    SystemKWGraph: 'System kW Chart',
-    SystemKWMetric: 'System kW Now',
-    SystemKWRTGraph: 'System kW/RT Chart',
-    SystemKWRTMetric: 'System kW/RT Now',
-    HeatBalanceGraph: 'Heat Balance Chart',
-    HeatBalanceMetric: 'Heat Balance Now',
-    ElecIncoming: "Today's Electrical Incoming (kWh)",
-    ElecUsage: "Today's Electrical Usage (kWh)",
-    TenantUsage: "Today's Tenant Electrical Usage (kWh)",
-    Solar: "Today's Solar (kWh)",
-    EVCharging: "Today's EV Charging (kWh)",
-    CampusEUI: 'Campus EUI (kWh/m²)',
-    CampusTSE: 'Campus TSE (kW/RT)',
-    EnergySourceDistPie: 'Energy Source Distribution (Pie)',
+    // Chiller‐top metrics
+    SystemRTMetric: '⚡ System RT Now (RT)',
+    SystemKWMetric: '⚡ System kW Now (kW)',
+    SystemKWRTMetric: '⚡ System kW/RT Now (kW/RT)',
+    HeatBalanceMetric: '⚡ Heat Balance Now (BTU)',
+
+    // Chiller “extra” small‐cards
+    ChillerEfficiency: '🔧 Chiller Efficiency (%)',
+    ChillerCOP: '🔧 Chiller COP',
+
+    // Chiller middle‐row charts
+    LoadDistPie: 'Load Distribution (Pie)',
+    TenantUsageMiniBar: 'Tenant Usage (Mini Bar)',
+    ElectricalIntakeBar: 'Electrical Intake (Stacked Bar)',
+    AirsideEnergyDistPie: 'Air-side Energy Dist. (Pie)',
+
+    // Chiller bottom‐row charts
+    SystemRTGraph: 'System RT Chart (Last 7 Days)',
+    SystemKWGraph: 'System kW Chart (Last 7 Days)',
+    SystemKWRTGraph: 'System kW/RT Chart (Last 7 Days)',
+    HeatBalanceGraph: 'Heat Balance Chart (Last 7 Days)',
+
+    // Campus metrics
+    ElecIncoming: "⚡ Today's Electrical Incoming (kWh)",
+    ElecUsage: "⚡ Today's Electrical Usage (kWh)",
+    TenantUsage: "⚡ Today's Tenant Electrical Usage (kWh)",
+    Solar: "🔆 Today's Solar (kWh)",
+    EVCharging: "🔋 Today's EV Charging (kWh)",
+    CampusEUI: '⚡ Campus EUI (kWh/m²)',
+    CampusTSE: '⚡ Campus TSE (kW/RT)',
+
+    // Campus charts
+    EnergySourceDistPie: 'Energy Source Dist. (Pie)',
     EnergySourceDistBar: 'Energy Source Trends (Bar)',
     CampusEUIBar: 'Campus EUI Trend (Bar)',
-    ElectricalIntakeBar: 'Electrical Intake Sources (Stacked Bar)',
-    EnergyUsageDistPie: 'Energy Usage Distribution (Pie)',
+    ElectricalIntakeBar: 'Electrical Intake (Stacked Bar)',
+    EnergyUsageDistPie: 'Energy Usage Dist. (Pie)',
     EnergyUsageDistBar: 'Energy Usage Trends (Bar)',
-    AirsideEnergyDistBar: 'Air-side Energy Distribution (Bar)'
+    AirsideEnergyDistBar: 'Air-side Energy Dist. (Bar)'
 }
 
-// 3) componentMap
+// 4) Map each “type” → component
 const componentMap = {
-    SystemRTGraph: LineChartCard,
+    // Chiller metrics
     SystemRTMetric: ValueCard,
-    SystemKWGraph: LineChartCard,
     SystemKWMetric: ValueCard,
-    SystemKWRTGraph: LineChartCard,
     SystemKWRTMetric: ValueCard,
-    HeatBalanceGraph: LineChartCard,
     HeatBalanceMetric: ValueCard,
+    ChillerEfficiency: ValueCard,
+    ChillerCOP: ValueCard,
+
+    // Chiller middle‐row
+    LoadDistPie: PieChartCard,
+    TenantUsageMiniBar: BarChartCard,
+    ElectricalIntakeBar: BarChartCard,
+    AirsideEnergyDistPie: PieChartCard,
+
+    // Chiller bottom‐row
+    SystemRTGraph: LineChartCard,
+    SystemKWGraph: LineChartCard,
+    SystemKWRTGraph: LineChartCard,
+    HeatBalanceGraph: LineChartCard,
+
+    // Campus metrics
     ElecIncoming: ValueCard,
     ElecUsage: ValueCard,
     TenantUsage: ValueCard,
@@ -149,6 +251,8 @@ const componentMap = {
     EVCharging: ValueCard,
     CampusEUI: ValueCard,
     CampusTSE: ValueCard,
+
+    // Campus charts
     EnergySourceDistPie: PieChartCard,
     EnergySourceDistBar: BarChartCard,
     CampusEUIBar: BarChartCard,
@@ -158,7 +262,7 @@ const componentMap = {
     AirsideEnergyDistBar: BarChartCard
 }
 
-// 4) Helpers for random data
+// 5) Helpers for random data / last‐7‐days labels
 function last7Days() {
     const days = []
     for (let i = 6; i >= 0; i--) {
@@ -176,13 +280,15 @@ function randomArray(len, max = 100) {
 
 const chartOptions = { responsive: true, scales: { y: { beginAtZero: true } } }
 
-// 5) Detect “metric” (ValueCard) vs “chart” (span multiple columns)
+// 6) Determine if a “type” is a ValueCard (metric) or a chart
 function isMetric(type) {
     return [
         'SystemRTMetric',
         'SystemKWMetric',
         'SystemKWRTMetric',
         'HeatBalanceMetric',
+        'ChillerEfficiency',
+        'ChillerCOP',
         'ElecIncoming',
         'ElecUsage',
         'TenantUsage',
@@ -193,7 +299,7 @@ function isMetric(type) {
     ].includes(type)
 }
 
-// 6) Build props on‐the‐fly
+// 7) Build props for each card on the fly
 function generateProps(type) {
     if (isMetric(type)) {
         return {
@@ -205,23 +311,24 @@ function generateProps(type) {
             title: labelMap[type] || type,
             chartData: {
                 labels: labels7,
-                datasets: [{ label: labelMap[type], data: randomArray(7) }]
+                datasets: [
+                    {
+                        label: labelMap[type],
+                        data: randomArray(7)
+                    }
+                ]
             },
             options: type.endsWith('Pie') ? { responsive: true } : chartOptions
         }
     }
 }
 
-// 7) Compute inline “gridColumn” style for wide charts
+// 8) Inline “style” (not used for bottom‐row charts)
 function generateStyle(type) {
-    if (!isMetric(type)) {
-        // span 3 columns now (instead of 2) to be bigger
-        return { gridColumn: 'span 2' }
-    }
-    return {} // metrics remain 1‐column
+    return {}
 }
 
-// 8) Tab state & download logic
+// 9) Tab state & download logic
 const currentTab = ref('chiller')
 
 function downloadCSV() {
@@ -231,42 +338,30 @@ function downloadCSV() {
         'Category',
         'Metric/Chart',
         'Most Recent Value',
-        'Last 7 Days Data (|‐separated)'
+        'Last 7 Days Data (|-separated)'
     ].join(',')
 
-    const allTypes = [
-        ...chillerTypes,
-        ...campusMetricTypes,
-        ...campusChartTypes
-    ]
+    const allTypes = [...chillerTypes, ...campusMetricTypes, ...campusChartTypes]
 
     const rows = allTypes.map((type) => {
-        const category = chillerTypes.includes(type)
-            ? 'Chiller Plant Energy'
-            : campusMetricTypes.includes(type) || campusChartTypes.includes(type)
-                ? 'Campus Electrical Energy'
-                : ''
+        let category = ''
+        if (chillerTypes.includes(type)) category = 'Chiller Plant Energy'
+        else if (
+            campusMetricTypes.includes(type) ||
+            campusChartTypes.includes(type)
+        ) {
+            category = 'Campus Electrical Energy'
+        }
 
         if (isMetric(type)) {
             const val = randomArray(1, 10000)[0]
-            return [
-                type,
-                `"${labelMap[type]}"`,
-                category,
-                'Metric',
-                val,
-                ''
-            ].join(',')
+            return [type, `"${labelMap[type]}"`, category, 'Metric', val, ''].join(',')
         } else {
             const arr = randomArray(7).join('|')
-            return [
-                type,
-                `"${labelMap[type]}"`,
-                category,
-                type.endsWith('Pie') ? 'Pie Chart' : 'Bar/Line Chart',
-                '',
-                `"${arr}"`
-            ].join(',')
+            const chartType = type.endsWith('Pie') ? 'Pie Chart' : 'Line/Bar Chart'
+            return [type, `"${labelMap[type]}"`, category, chartType, '', `"${arr}"`].join(
+                ','
+            )
         }
     })
 
@@ -274,7 +369,7 @@ function downloadCSV() {
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
     const link = document.createElement('a')
     link.href = URL.createObjectURL(blob)
-    link.setAttribute('download', 'building_management_data.csv')
+    link.setAttribute('download', 'power_management_data.csv')
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
@@ -282,171 +377,270 @@ function downloadCSV() {
 </script>
 
 <style scoped>
-.building-management-container {
+/* ───────────────────────────────────────────────────────────────────────────── */
+/* 1) CONTAINER & TYPOGRAPHY                                                      */
+/* ───────────────────────────────────────────────────────────────────────────── */
+.power-management-container {
     padding: 20px;
     font-family: sans-serif;
+    background-color: #0a1f44;
+    /* very dark blue */
+    min-height: 100vh;
+    color: white;
 }
 
 .page-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px
+    margin-bottom: 16px;
 }
 
 .page-title {
     font-size: 24px;
     margin: 0;
-    color: var(--main-text-color)
+    color: white;
 }
 
 .breadcrumb span {
     font-size: 14px;
-    color: var(--main-text-color);
-    margin: 0 4px
+    color: white;
+    margin: 0 4px;
 }
 
-/* Tab Navigation */
+/* ───────────────────────────────────────────────────────────────────────────── */
+/* 2) TAB NAVIGATION                                                              */
+/* ───────────────────────────────────────────────────────────────────────────── */
 .tab-nav {
     display: flex;
-    gap: 16px;
-    margin-bottom: 24px;
+    gap: 10px;
+    margin-bottom: 16px;
 }
 
 .tab-nav button {
-    padding: 8px 16px;
+    padding: 6px 12px;
     border: none;
-    background: #f1f5f9;
+    background: rgba(255, 255, 255, 0.1);
     border-radius: 4px;
     font-weight: bold;
+    color: white;
     cursor: pointer;
+    font-size: 0.9rem;
     transition: background 0.2s;
 }
 
 .tab-nav button:hover {
-    background: #e2e8f0;
+    background: rgba(255, 255, 255, 0.2);
 }
 
 .tab-nav button.active {
-    background: #ff9800;
+    background: #1976d2;
     color: white;
 }
 
-/* Tab Content */
-.tab-content h2 {
-    margin-top: 0;
-    margin-bottom: 16px;
-    color: var(--main-text-color);
+/* ───────────────────────────────────────────────────────────────────────────── */
+/* 3) CHILLER TOP ROW (4 columns)                                                 */
+/* ───────────────────────────────────────────────────────────────────────────── */
+.chiller-top-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 12px;
 }
 
-/* Grid of Cards (now min‐width 300px) */
+.value-card {
+    background-color: #1e2a47;
+    color: white;
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.value-card .title {
+    font-size: 1rem;
+    margin-bottom: 8px;
+    color: white;
+}
+
+.value-card .value {
+    font-size: 2rem;
+    font-weight: bold;
+    color: white;
+}
+
+/* ───────────────────────────────────────────────────────────────────────────── */
+/* 4) CHILLER MID ROW (4 equal columns)                                           */
+/* ───────────────────────────────────────────────────────────────────────────── */
+.chiller-mid-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.chart-card,
+.mini-bar-card {
+    background-color: #1e2a47;
+    color: white;
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    min-height: 140px;
+}
+
+.chart-card .card-title,
+.mini-bar-card .card-title {
+    margin: 0 0 8px;
+    font-size: 1rem;
+    text-align: center;
+    color: white;
+}
+
+.chart-card canvas,
+.mini-bar-card canvas {
+    max-width: 90%;
+    max-height: 70%;
+    width: auto !important;
+    height: auto !important;
+}
+
+/* ───────────────────────────────────────────────────────────────────────────── */
+/* 5) CHILLER BOTTOM ROW (4 equal columns, fixed height)                          */
+/* ───────────────────────────────────────────────────────────────────────────── */
+.chiller-bottom-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+/* Shrink each card to 180px total height and reduce padding */
+.chiller-bottom-grid .chart-card {
+    background-color: #1e2a47;
+    color: white;
+    border-radius: 8px;
+    padding: 8px;
+    /* reduced from 12px */
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    overflow: hidden;
+    /* reduced from 200px */
+}
+
+/* Force the title to occupy about 30px, then give the chart the rest */
+.chiller-bottom-grid .chart-card .card-title {
+    margin: 0 0 6px;
+    /* a bit less bottom margin */
+    font-size: 1rem;
+    text-align: center;
+    color: white;
+    flex: 0 0 auto;
+    line-height: 1.2;
+    /* force the title to about ~24px–30px tall */
+    max-height: 30px;
+}
+
+/* Now clamp the canvas to whatever remains (about 150px or less) */
+.chiller-bottom-grid .chart-card canvas {
+    width: 100% !important;
+    max-height: calc(100% - 30px) !important;
+    /* leave space for title */
+    height: auto !important;
+}
+
+/* ───────────────────────────────────────────────────────────────────────────── */
+/* 6) CAMPUS TAB: Shared cards‐grid styling                                       */
+/* ───────────────────────────────────────────────────────────────────────────── */
 .cards-grid {
     display: grid;
-    gap: 20px;
-    margin-bottom: 24px;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 10px;
+    margin-bottom: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
 }
 
-/* Card Base Styles */
-.card-wrapper {
-    position: relative;
-    background: #fff;
+.cards-grid .value-card,
+.cards-grid .chart-card {
+    background-color: #1e2a47;
+    color: white;
     border-radius: 8px;
-    padding: 16px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    padding: 12px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
 }
 
-.card-wrapper:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-}
-
-/* Metric/Value Cards constrained to one column width */
-.card-wrapper.value-card {
-    max-width: 100%;
-    /* slightly larger if you want */
-}
-
-/* Drag Handle */
-.card-handle {
-    position: absolute;
-    top: 8px;
-    left: 8px;
-    font-size: 1.2rem;
-    cursor: grab;
-    z-index: 10;
-}
-
-.card-handle:active {
-    cursor: grabbing;
-}
-
-/* Edit/Delete Buttons */
-.card-top-actions {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    display: flex;
-    gap: 8px;
-    z-index: 10;
-}
-
-.card-top-actions button {
-    background: none;
-    border: none;
-    color: var(--main-text-color);
-    font-size: 16px;
-    cursor: pointer;
-    transition: color 0.2s;
-}
-
-.card-top-actions button:hover {
-    color: var(--header-icon-hover-color);
-}
-
-/* Download Tab */
+/* ───────────────────────────────────────────────────────────────────────────── */
+/* 7) DOWNLOAD BUTTON                                                             */
+/* ───────────────────────────────────────────────────────────────────────────── */
 .download-button {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    background: var(--header-icon-hover-color);
+    gap: 6px;
+    padding: 8px 16px;
+    background: #1976d2;
     color: white;
     border: none;
     border-radius: 4px;
     font-weight: 600;
     cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.2s;
 }
 
 .download-button i {
-    font-size: 16px;
+    font-size: 14px;
 }
 
 .download-button:hover {
-    background: var(--header-icon-color);
+    background: #125ea3;
 }
 
 .note {
-    margin-top: 12px;
-    font-size: 14px;
-    color: var(--main-text-color);
+    margin-top: 8px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.8);
 }
 
-/* Responsive */
+/* ───────────────────────────────────────────────────────────────────────────── */
+/* 8) RESPONSVIE ADJUSTMENTS                                                       */
+/* ───────────────────────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
-    .building-management-container {
+    .power-management-container {
         padding: 10px;
     }
 
     .tab-nav {
         flex-direction: column;
-        gap: 12px;
+        gap: 8px;
     }
 
+    /* Collapse chiller grids to single column on mobile */
+    .chiller-top-grid,
+    .chiller-mid-grid,
+    .chiller-bottom-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Let bottom‐row cards grow in height */
+    .chiller-bottom-grid .chart-card {
+        height: auto !important;
+    }
+
+    .chiller-bottom-grid .chart-card canvas {
+        max-height: 120px !important;
+    }
+
+    /* Collapse campus‐grid as well */
     .cards-grid {
         grid-template-columns: 1fr !important;
-        gap: 16px;
+        gap: 8px;
     }
 }
 </style>

@@ -31,7 +31,7 @@ const props = defineProps({
 
 <style scoped>
 .card {
-    background: #fff;
+    background: transparent;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     display: flex;
@@ -59,6 +59,6 @@ const props = defineProps({
 }
 
 .data-table th {
-    background: #f1f5f9;
+    background: #516fb4;
 }
 </style>

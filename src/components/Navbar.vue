@@ -9,6 +9,7 @@
                 <i class="fas fa-expand"></i>
             </button>
             <button class="header-icon" @click="toggleTheme">
+                <!-- icon flips based on isDarkMode -->
                 <i :class="isDarkMode ? 'fas fa-sun' : 'fas fa-moon'"></i>
             </button>
             <button class="header-icon user-icon">
@@ -19,18 +20,32 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+
+// Accept the `collapsed` prop as before
 const props = defineProps({ collapsed: Boolean })
-const isDarkMode = ref(false)
+
+// 1) Initialize isDarkMode to true so dark mode is on by default:
+const isDarkMode = ref(true)
 
 function toggleTheme() {
     isDarkMode.value = !isDarkMode.value
     document.body.classList.toggle('dark-mode', isDarkMode.value)
 }
+
 function toggleFullScreen() {
-    if (!document.fullscreenElement) document.documentElement.requestFullscreen()
-    else if (document.exitFullscreen) document.exitFullscreen()
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen()
+    } else if (document.exitFullscreen) {
+        document.exitFullscreen()
+    }
 }
+
+// 2) When the component mounts, immediately add the `dark-mode` class
+onMounted(() => {
+    // Because `isDarkMode` is already true, this will add the class right away.
+    document.body.classList.add('dark-mode')
+})
 </script>
 
 <style scoped>

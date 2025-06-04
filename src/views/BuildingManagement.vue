@@ -23,7 +23,7 @@
         <!-- SENSOR OVERVIEW TAB -->
         <div v-if="currentTab === 'overview'" class="tab-content">
             <!-- Chilled Water Pump Section -->
-            <h2>Chilled Water Pump</h2>
+            <h2 class="section-heading">Chilled Water Pump</h2>
             <div class="sensors-grid">
                 <div v-for="sensor in chilledPumpSensors" :key="sensor.id" class="sensor-card">
                     <h3 class="sensor-title">{{ sensor.name }}</h3>
@@ -39,7 +39,7 @@
             </div>
 
             <!-- Chiller Section -->
-            <h2>Chiller</h2>
+            <h2 class="section-heading">Chiller</h2>
             <div class="sensors-grid">
                 <div v-for="sensor in chillerSensors" :key="sensor.id" class="sensor-card">
                     <h3 class="sensor-title">{{ sensor.name }}</h3>
@@ -55,7 +55,7 @@
             </div>
 
             <!-- Compiled Section -->
-            <h2>Compiled</h2>
+            <h2 class="section-heading">Compiled</h2>
             <div class="sensors-grid">
                 <div v-for="sensor in compiledSensors" :key="sensor.id" class="sensor-card">
                     <h3 class="sensor-title">{{ sensor.name }}</h3>
@@ -73,7 +73,7 @@
 
         <!-- DOWNLOAD DATA TAB -->
         <div v-if="currentTab === 'download'" class="tab-content download-tab">
-            <h2>Download Current Sensor Data (CSV)</h2>
+            <h2 class="section-heading">Download Current Sensor Data (CSV)</h2>
             <button class="download-button" @click="downloadCSV">
                 <i class="fas fa-download"></i>
                 <span>Download CSV</span>
@@ -275,32 +275,41 @@ function downloadCSV() {
 </script>
 
 <style scoped>
+/* ───────────────────────────────────────────────────────────────────────────── */
+/* 1) CONTAINER & TYPOGRAPHY                                                      */
+/* ───────────────────────────────────────────────────────────────────────────── */
 .building-management-container {
     padding: 20px;
     font-family: Arial, sans-serif;
-    color: var(--main-text-color);
+    background-color: #0a1f44;
+    /* very dark blue */
+    min-height: 100vh;
+    color: white;
+    /* default text color */
 }
 
 .page-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px
+    margin-bottom: 20px;
 }
 
 .page-title {
     font-size: 24px;
     margin: 0;
-    color: var(--main-text-color)
+    color: white;
 }
 
 .breadcrumb span {
     font-size: 14px;
-    color: var(--main-text-color);
-    margin: 0 4px
+    color: white;
+    margin: 0 4px;
 }
 
-/* Tab Navigation */
+/* ───────────────────────────────────────────────────────────────────────────── */
+/* 2) TAB NAVIGATION                                                              */
+/* ───────────────────────────────────────────────────────────────────────────── */
 .tab-nav {
     display: flex;
     gap: 16px;
@@ -310,7 +319,8 @@ function downloadCSV() {
 .tab-nav button {
     padding: 8px 16px;
     border: none;
-    background: #f1f5f9;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
     border-radius: 4px;
     font-weight: bold;
     cursor: pointer;
@@ -318,22 +328,27 @@ function downloadCSV() {
 }
 
 .tab-nav button:hover {
-    background: #e2e8f0;
+    background: rgba(255, 255, 255, 0.2);
 }
 
 .tab-nav button.active {
-    background: #ff9800;
+    background: #1976d2;
     color: white;
 }
 
-/* Section Headings */
-.tab-content h2 {
-    margin-top: 0;
+/* ───────────────────────────────────────────────────────────────────────────── */
+/* 3) SECTION HEADINGS                                                            */
+/* ───────────────────────────────────────────────────────────────────────────── */
+.section-heading {
+    margin-top: 32px;
     margin-bottom: 12px;
-    color: var(--main-text-color);
+    color: white;
+    font-size: 20px;
 }
 
-/* SENSOR GRID: two columns on desktop, one on narrow screens */
+/* ───────────────────────────────────────────────────────────────────────────── */
+/* 4) SENSOR GRID: two columns on desktop, one on narrow screens                  */
+/* ───────────────────────────────────────────────────────────────────────────── */
 .sensors-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -341,26 +356,29 @@ function downloadCSV() {
     margin-bottom: 32px;
 }
 
-/* Each sensor card */
+/* ───────────────────────────────────────────────────────────────────────────── */
+/* 5) Each sensor card                                                            */
+/* ───────────────────────────────────────────────────────────────────────────── */
 .sensor-card {
-    background: #fff;
-    border: 1px solid rgba(0, 0, 0, 0.12);
+    background-color: #1e2a47;
+    /* dark navy card */
+    color: white;
     border-radius: 8px;
     padding: 16px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    position: relative;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .sensor-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 
 .sensor-title {
     margin: 0 0 8px 0;
     font-size: 18px;
     font-weight: bold;
+    color: #edf2f7;
 }
 
 .sensor-body {
@@ -370,19 +388,24 @@ function downloadCSV() {
 .sensor-value {
     font-size: 16px;
     margin: 0 0 6px 0;
+    color: #e2e8f0;
 }
 
 .sensor-value span {
     font-weight: 600;
+    color: #fff;
 }
 
 .sensor-updated {
     font-size: 14px;
-    color: #555;
+    color: #a0aec0;
+    /* lighter gray */
     margin: 0;
 }
 
-/* DOWNLOAD TAB Styles */
+/* ───────────────────────────────────────────────────────────────────────────── */
+/* 6) DOWNLOAD TAB Styles                                                          */
+/* ───────────────────────────────────────────────────────────────────────────── */
 .download-tab {
     display: flex;
     flex-direction: column;
@@ -394,13 +417,14 @@ function downloadCSV() {
     align-items: center;
     gap: 8px;
     padding: 10px 20px;
-    background: var(--header-icon-hover-color);
+    background: #1976d2;
     color: white;
     border: none;
     border-radius: 4px;
     font-weight: 600;
     cursor: pointer;
     margin-bottom: 12px;
+    transition: background 0.2s;
 }
 
 .download-button i {
@@ -408,15 +432,18 @@ function downloadCSV() {
 }
 
 .download-button:hover {
-    background: var(--header-icon-color);
+    background: #125ea3;
 }
 
 .note {
     font-size: 14px;
-    color: var(--main-text-color);
+    color: #cbd5e0;
+    /* subdued gray text */
 }
 
-/* RESPONSIVE: single column below 768px */
+/* ───────────────────────────────────────────────────────────────────────────── */
+/* 7) RESPONSIVE: single column below 768px                                        */
+/* ───────────────────────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
     .building-management-container {
         padding: 10px;
