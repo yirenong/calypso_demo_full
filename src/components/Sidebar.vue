@@ -1,7 +1,7 @@
 <template>
     <aside :class="['app-sidebar', { collapsed }]">
         <div class="logo-section">
-            <img src="../assets/cavill_logo.png" alt="Logo" class="logo" />
+            <img src="../assets/ITE_LOGO.png" alt="Logo" class="logo" />
         </div>
 
         <!-- Close button on mobile only -->
@@ -36,9 +36,9 @@
                         </router-link>
                     </li>
                     <li>
-                        <router-link to="/Power-management" class="menu-link">
+                        <router-link to="/energy-management" class="menu-link">
                             <i class="fas fa-bolt"></i>
-                            <span class="link-text">Power Management</span>
+                            <span class="link-text">Energy Management</span>
                         </router-link>
                     </li>
                 </ul>
