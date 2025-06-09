@@ -244,7 +244,7 @@ const labelMap = {
     WEI: 'WEI (litres/person/day)',
 
     // New Middle‐Row Gauges:
-    WaterEfficiency: 'Water Efficiency (kW/RT)',
+    WaterEfficiency: 'Chiller Plant Efficiency (kW/RT)',
     AirsideEfficiency: 'Airside Efficiency (kW/RT)',
 
     // (If you ever need the actual gauge‐pie label, e.g. “Water Efficiency”)

@@ -4,11 +4,11 @@
         <!-- ─────────────────────────────────────────────────────────────────────────── -->
         <!-- 1) PAGE HEADER -->
         <div class="page-header">
-            <h2 class="page-title">Power Management</h2>
+            <h2 class="page-title">Energy Management</h2>
             <nav class="breadcrumb">
                 <span>Cavill</span> &gt;
                 <span>Management</span> &gt;
-                <span>Power Management</span>
+                <span>Energy Management</span>
             </nav>
         </div>
 

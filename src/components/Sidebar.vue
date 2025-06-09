@@ -9,12 +9,21 @@
 
         <nav>
             <div class="menu-section">
+                <ul class="menu">
+                    <li>
+                        <div class="menu-link">
+                            <span class="link-text">ITE HQ & ITE CC</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="menu-section">
                 <span class="menu-title">MENU</span>
                 <ul class="menu">
                     <li>
                         <router-link to="/" class="menu-link">
                             <i class="fas fa-home"></i>
-                            <span class="link-text">Homepage</span>
+                            <span class="link-text">Dashboard</span>
                         </router-link>
                     </li>
                 </ul>
@@ -26,19 +35,19 @@
                     <li>
                         <router-link to="/building-management" class="menu-link">
                             <i class="fas fa-building"></i>
-                            <span class="link-text">Building Management</span>
-                        </router-link>
-                    </li>
-                    <li>
-                        <router-link to="/water-management" class="menu-link">
-                            <i class="fas fa-tint"></i>
-                            <span class="link-text">Water Management</span>
+                            <span class="link-text">Real-Time Metrics</span>
                         </router-link>
                     </li>
                     <li>
                         <router-link to="/energy-management" class="menu-link">
                             <i class="fas fa-bolt"></i>
                             <span class="link-text">Energy Management</span>
+                        </router-link>
+                    </li>
+                    <li>
+                        <router-link to="/water-management" class="menu-link">
+                            <i class="fas fa-tint"></i>
+                            <span class="link-text">Water Management</span>
                         </router-link>
                     </li>
                 </ul>
