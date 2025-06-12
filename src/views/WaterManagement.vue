@@ -189,11 +189,15 @@ const usageBottomCharts = [
 // ───────────────────────────────────────────────────────────────────────────────
 const sustainTables = [
     {
-        title: 'Sustainability Indicators – Carbon Footprint & Emissions',
-        columns: ['Item', 'Value'],
+        title: 'Sustainability Indicators – Detailed Breakdown',
+        columns: ['Indicator', 'Current Value', 'Target', 'Unit', 'Change %'],
         rows: [
-            { Item: 'Scope 1 CO₂', Value: '1,200 t' },
-            { Item: 'Scope 2 CO₂', Value: '3,400 t' }
+            { Indicator: 'Scope 1 CO₂', 'Current Value': '1,200', Target: '1,000', Unit: 't', 'Change %': '-20%' },
+            { Indicator: 'Scope 2 CO₂', 'Current Value': '3,400', Target: '3,200', Unit: 't', 'Change %': '-6%' },
+            { Indicator: 'Scope 3 CO₂', 'Current Value': '2,500', Target: '2,000', Unit: 't', 'Change %': '-20%' },
+            { Indicator: 'Total Water Use', 'Current Value': '  500', Target: '  450', Unit: 'm³', 'Change %': '-10%' },
+            { Indicator: 'Total Energy Use', 'Current Value': '10,000', Target: ' 9,000', Unit: 'kWh', 'Change %': '-10%' },
+            { Indicator: 'Waste Generated', 'Current Value': '   75', Target: '   60', Unit: 't', 'Change %': '-20%' }
         ]
     }
 ]
@@ -203,19 +207,25 @@ const sustainTables = [
 // ───────────────────────────────────────────────────────────────────────────────
 const statsTables = [
     {
-        title: 'Statistical Analysis – Alerts from CCTV Video Analytics',
-        columns: ['Item', 'Value', 'Warning'],
+        title: 'Statistical Analysis – CCTV Analytics Metrics',
+        columns: ['Metric', 'Value', 'Threshold', 'Alert', 'Last Updated'],
         rows: [
-            { Item: 'Motion Alerts', Value: '12' , Warning : 'Yes'},
-            { Item: 'Object Alerts', Value: '5' , Warning: 'No'}
+            { Metric: 'Motion Alerts', Value: '12', Threshold: '10', Alert: 'Yes', 'Last Updated': '2025-06-10' },
+            { Metric: 'Object Alerts', Value: ' 5', Threshold: ' 8', Alert: 'No', 'Last Updated': '2025-06-10' },
+            { Metric: 'Person Detections', Value: ' 3', Threshold: ' 2', Alert: 'Yes', 'Last Updated': '2025-06-10' },
+            { Metric: 'Loitering Alerts', Value: ' 7', Threshold: ' 5', Alert: 'Yes', 'Last Updated': '2025-06-10' },
+            { Metric: 'False Positives', Value: ' 4', Threshold: ' 6', Alert: 'No', 'Last Updated': '2025-06-10' }
         ]
     },
     {
-        title: 'Statistical Analysis – Diagnostic Report & Analysis',
-        columns: ['Item', 'Value'],
+        title: 'Statistical Analysis – System Diagnostics',
+        columns: ['Report', 'Status', 'Last Run', 'Duration', 'Errors'],
         rows: [
-            { Item: 'Report A Status', Value: 'OK' },
-            { Item: 'Report B Status', Value: 'Warning' }
+            { Report: 'Report A', Status: 'OK', 'Last Run': '2025-06-11', Duration: ' 2m', Errors: '0' },
+            { Report: 'Report B', Status: 'Warning', 'Last Run': '2025-06-11', Duration: ' 3m', Errors: '1' },
+            { Report: 'Report C', Status: 'OK', 'Last Run': '2025-06-11', Duration: ' 1m', Errors: '0' },
+            { Report: 'Report D', Status: 'Error', 'Last Run': '2025-06-11', Duration: ' 4m', Errors: '3' },
+            { Report: 'Report E', Status: 'OK', 'Last Run': '2025-06-11', Duration: ' 2m', Errors: '0' }
         ]
     }
 ]
@@ -237,15 +247,15 @@ const labelMap = {
     WaterConsumptionTrendBar: 'Water Consumption Trend (Bar)',
 
     // New Top‐Row Metrics:
-    TSE: 'TSE (kW/RT)',
-    EUI: 'EUI (kWh/m²/yr)',
+    TSE: 'PUB Water (Today) Incoming (m3)',
+    EUI: 'NEWater (Today) Incoming (m3)',
     FilterEnergy: 'Filter Energy: Date Between',
-    WaterCUM: 'Water (Cu.M)',
-    WEI: 'WEI (litres/person/day)',
+    WaterCUM: 'Campus Water (Today) Incoming (m3)',
+    WEI: 'Campus WUI (m3/population)',
 
     // New Middle‐Row Gauges:
-    WaterEfficiency: 'Chiller Plant Efficiency (kW/RT)',
-    AirsideEfficiency: 'Airside Efficiency (kW/RT)',
+    WaterEfficiency: 'Water Source Distribution',
+    AirsideEfficiency: 'Water Intake Sources',
 
     // (If you ever need the actual gauge‐pie label, e.g. “Water Efficiency”)
     // For demonstration, we treat gauge charts as PieChartCard with random data.
@@ -255,13 +265,13 @@ const labelMap = {
     WaterByProportionPie: 'Water by Proportion',
 
     // New Middle‐Row Bar:
-    TenantWaterMetersBar: 'Tenant Water Meters',
+    TenantWaterMetersBar: 'Water Source Distribution',
 
     // New Bottom‐Row Bars/Lines:
-    EnergyConsumptionByBlockBar: 'Energy Consumption by Block',
-    SolarGeneratedLine: 'Solar generated (kWh)',
-    TenantEnergyMetersBar: 'Tenant Energy Meters',
-    WaterConsumptionByBlockBar: 'Water Consumption by Block'
+    EnergyConsumptionByBlockBar: 'Water Intake Sources',
+    SolarGeneratedLine: 'Water Intake Sources',
+    TenantEnergyMetersBar: 'Water Usage Distribution',
+    WaterConsumptionByBlockBar: 'Campus WUI (m3/population)'
 }
 
 // ───────────────────────────────────────────────────────────────────────────────
@@ -605,7 +615,7 @@ function onDateRangeChanged({ start, end }) {
     /* smaller gap */
     margin-bottom: 16px;
     /* smaller margin */
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
 }
 
 /* ───────────────────────────────────────────────────────────────────────────── */

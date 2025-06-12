@@ -39,31 +39,6 @@
                 </div>
             </div>
 
-            <!-- ─── Middle Row: 2 Pies | 1 Mini‐Bar | 1 Stacked Bar ──────────────────── -->
-            <div class="chiller-mid-grid">
-                <!-- 1) Load Distribution (Pie) -->
-                <div class="card-wrapper chart-card">
-                    <component :is="componentMap['LoadDistPie']" v-bind="generateProps('LoadDistPie')" />
-                </div>
-
-                <!-- 2) Tenant Usage (Mini Bar) -->
-                <div class="card-wrapper mini-bar-card">
-                    <component :is="componentMap['TenantUsageMiniBar']" v-bind="generateProps('TenantUsageMiniBar')" />
-                </div>
-
-                <!-- 3) Electrical Intake (Stacked Bar) -->
-                <div class="card-wrapper chart-card">
-                    <component :is="componentMap['ElectricalIntakeBar']"
-                        v-bind="generateProps('ElectricalIntakeBar')" />
-                </div>
-
-                <!-- 4) Air-side Energy (Pie) -->
-                <div class="card-wrapper chart-card">
-                    <component :is="componentMap['AirsideEnergyDistPie']"
-                        v-bind="generateProps('AirsideEnergyDistPie')" />
-                </div>
-            </div>
-
             <!-- ─── Bottom Row: 4 Equal‐Width Chart Cards (no overflow) ──────────────── -->
             <div class="chiller-bottom-grid">
                 <!-- 1) System RT Chart -->
@@ -141,10 +116,6 @@ const chillerTypes = [
     'HeatBalanceMetric',
     'ChillerEfficiency',
     'ChillerCOP',
-    'LoadDistPie',
-    'TenantUsageMiniBar',
-    'ElectricalIntakeBar',
-    'AirsideEnergyDistPie',
     'SystemRTGraph',
     'SystemKWGraph',
     'SystemKWRTGraph',
@@ -190,12 +161,6 @@ const labelMap = {
     ChillerEfficiency: '🔧 Chiller Efficiency (%)',
     ChillerCOP: '🔧 Chiller COP',
 
-    // Chiller middle‐row charts
-    LoadDistPie: 'Load Distribution (Pie)',
-    TenantUsageMiniBar: 'Tenant Usage (Mini Bar)',
-    ElectricalIntakeBar: 'Electrical Intake (Stacked Bar)',
-    AirsideEnergyDistPie: 'Air-side Energy Dist. (Pie)',
-
     // Chiller bottom‐row charts
     SystemRTGraph: 'System RT Chart (Last 7 Days)',
     SystemKWGraph: 'System kW Chart (Last 7 Days)',
@@ -221,6 +186,14 @@ const labelMap = {
     AirsideEnergyDistBar: 'Air-side Energy Dist. (Bar)'
 }
 
+// after chillerTopMetrics & before componentMap...
+const chillerPairs = [
+  ['SystemRTMetric',    'SystemRTGraph'],
+  ['SystemKWMetric',    'SystemKWGraph'],
+  ['SystemKWRTMetric',  'SystemKWRTGraph'],
+  ['HeatBalanceMetric', 'HeatBalanceGraph']
+]
+
 // 4) Map each “type” → component
 const componentMap = {
     // Chiller metrics
@@ -230,12 +203,6 @@ const componentMap = {
     HeatBalanceMetric: ValueCard,
     ChillerEfficiency: ValueCard,
     ChillerCOP: ValueCard,
-
-    // Chiller middle‐row
-    LoadDistPie: PieChartCard,
-    TenantUsageMiniBar: BarChartCard,
-    ElectricalIntakeBar: BarChartCard,
-    AirsideEnergyDistPie: PieChartCard,
 
     // Chiller bottom‐row
     SystemRTGraph: LineChartCard,
