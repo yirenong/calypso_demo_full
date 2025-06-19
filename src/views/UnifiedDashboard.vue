@@ -6,7 +6,7 @@
                 <div class="section-header">
                     <div class="section-title">
                         <span class="icon-wrapper leaf-icon"><i class="fas fa-leaf"></i></span>
-                        <h3>Sustainability KPIs</h3>
+                        <h3>Environmental Impact Indicator</h3>
                     </div>
                     <div class="section-actions">
                         <button class="action-btn"><i class="fas fa-info-circle"></i></button>
@@ -47,7 +47,7 @@
                 <div class="section-header">
                     <div class="section-title">
                         <span class="icon-wrapper gear-icon"><i class="fas fa-cogs"></i></span>
-                        <h3>Asset Performance KPIs</h3>
+                        <h3>ITE CC & HQ</h3>
                     </div>
                     <div class="section-actions">
                         <button class="action-btn"><i class="fas fa-info-circle"></i></button>
@@ -111,7 +111,7 @@
                 <div class="section-header">
                     <div class="section-title">
                         <span class="icon-wrapper resources-icon"><i class="fas fa-chart-pie"></i></span>
-                        <h3>Resource Utilization Overview</h3>
+                        <h3>Water & Energy Indicator</h3>
                     </div>
                     <div class="section-actions">
                         <button class="action-btn"><i class="fas fa-info-circle"></i></button>
@@ -344,11 +344,46 @@ const legendItems = computed(() => activeChart.value === 'EnergyConsumptionTrend
     ]
 )
 const chartOpts = computed(() => ({
-    responsive: true, maintainAspectRatio: false, animation: false,
-    scales: { y: { beginAtZero: true }, eui: { position: 'right', grid: { drawOnChartArea: false } } },
-    plugins: { legend: { position: 'bottom' } }
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: false,
+
+    scales: {
+        x: {
+            ticks: { color: '#fff' },
+            grid: { color: 'rgba(255,255,255,0.2)' }
+        },
+        y: {
+            beginAtZero: true,
+            ticks: { color: '#fff' },
+            grid: { color: 'rgba(255,255,255,0.2)' }
+        },
+        eui: {
+            position: 'right',
+            grid: { drawOnChartArea: false },
+            ticks: { color: '#fff' }
+        }
+    },
+
+    plugins: {
+        legend: {
+            position: 'bottom',
+            labels: { color: '#fff' }   // legend label color
+        }
+    }
 }))
-const pieOpts = { responsive: true, plugins: { legend: { position: 'bottom' } } }
+
+const pieOpts = {
+    responsive: true,
+    plugins: {
+        legend: {
+            position: 'bottom',
+            labels: {
+                color: '#fff'   // legend label text in white
+            }
+        }
+    }
+}
 
 // handlers
 function downloadChartCSV() {
@@ -371,38 +406,43 @@ function toggleFullScreen() {
 <style scoped>
 .dashboard-container {
     padding: 16px;
-    background: #f5f5f5
+    background: #0a1f44;
+    /* dark blue overall background */
+    color: #fff;
+    /* default text color white */
 }
 
 .dashboard-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 16px
+    gap: 16px;
 }
 
+/* Card backgrounds: slightly lighter than container */
 .column {
-    background: #fff;
+    background: #112d5c;
     border-radius: 8px;
-    padding: 12px
+    padding: 12px;
 }
 
+/* Section header */
 .section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 12px
+    margin-bottom: 12px;
 }
 
 .section-title {
     display: flex;
     align-items: center;
-    gap: 8px
+    gap: 8px;
 }
 
 .section-title h3 {
     margin: 0;
     font-size: 1rem;
-    color: #333
+    color: #fff;
 }
 
 .icon-wrapper {
@@ -413,94 +453,140 @@ function toggleFullScreen() {
     justify-content: center;
     background: #1976d2;
     border-radius: 50%;
-    color: #fff
+    color: #fff;
 }
 
 .section-actions button {
     background: none;
     border: none;
-    color: #666;
+    color: #fff;
     margin-left: 8px;
-    cursor: pointer
+    cursor: pointer;
 }
 
+/* KPI grid */
 .kpi-grid-2 {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 8px;
-    margin-bottom: 12px
+    margin-bottom: 12px;
 }
 
 .kpi-card-wrapper {
-    background: #fff;
-    border: 1px solid #e0e0e0;
+    background: #1e3f7a;
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 4px;
     padding: 4px 8px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    height: 90px
+    height: 90px;
 }
 
 .kpi-title {
     font-size: 0.75rem;
-    color: #666;
-    margin-bottom: 4px
+    color: #fff;
+    margin-bottom: 4px;
 }
 
 .kpi-number {
     font-size: 1.3rem;
     font-weight: bold;
-    color: #000;
-    margin-bottom: 2px
+    color: #fff;
+    margin-bottom: 2px;
 }
 
 .kpi-unit {
     font-size: 0.75rem;
-    color: #333
+    color: #fff;
 }
 
+/* Filter panel */
+.filter-panel {
+    padding: 12px;
+    background: #112d5c;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    margin-bottom: 12px;
+}
+
+.filter-panel h4 {
+    margin: 0 0 8px;
+    color: #fff;
+}
+
+.filter-option {
+    margin-bottom: 8px;
+}
+
+.filter-option label {
+    color: #fff;
+    cursor: pointer;
+}
+
+/* Controls */
 .controls {
     display: flex;
     align-items: center;
     gap: 16px;
-    margin-bottom: 12px
+    margin-bottom: 12px;
+    background: #112d5c;
+    /* match your card bg */
+    color: #fff;
+    /* selected text */
+    
 }
 
 .controls select {
     padding: 4px 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 4px;
+    background: transparent;
+    color: #fff;
+}
+
+.controls select option {
+  background-color: #112d5c;
+  color: #fff;
+}
+
+/* Highlight hovered option in list */
+.controls select option:hover,
+.controls select option:checked {
+  background-color: #1976d2;
+  color: #fff;
 }
 
 .period-toggle {
     display: flex;
-    gap: 4px
+    gap: 4px;
 }
 
 .period-toggle button {
     padding: 4px 8px;
-    border: 1px solid #ccc;
-    background: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    background: transparent;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 0.75rem
+    font-size: 0.75rem;
+    color: #fff;
 }
 
 .period-toggle button.active {
     background: #1976d2;
     color: #fff;
-    border-color: #1976d2
+    border-color: #1976d2;
 }
 
+/* Chart module */
 .chart-module {
     position: relative;
-    border: 1px solid #ccc;
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 4px;
     padding: 12px;
     margin-bottom: 12px;
-    background: #fff;
-    height: 300px
+    background: #112d5c;
+    height: 325px;
 }
 
 .chart-actions {
@@ -508,7 +594,7 @@ function toggleFullScreen() {
     top: 8px;
     right: 8px;
     display: flex;
-    gap: 8px
+    gap: 8px;
 }
 
 .chart-btn {
@@ -516,70 +602,68 @@ function toggleFullScreen() {
     border: none;
     cursor: pointer;
     font-size: 1rem;
-    color: #666
+    color: #fff;
 }
 
+.chart-btn i {
+    color: #fff;
+}
+
+/* Chart legend */
 .chart-legend ul {
     display: flex;
     gap: 12px;
     list-style: none;
     padding: 0;
-    margin-top: 8px
+    margin-top: 8px;
 }
 
 .chart-legend li {
     display: flex;
     align-items: center;
     gap: 4px;
-    font-size: 0.8rem
+    font-size: 0.8rem;
+    color: #fff;
 }
 
 .legend-color {
     width: 12px;
     height: 12px;
-    border-radius: 2px
+    border-radius: 2px;
 }
 
-.filter-panel {
-    padding: 12px;
-    background: #fff;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    margin-bottom: 12px
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    color: #fff;
+    margin-bottom: 12px;
 }
 
-.filter-option {
-    margin-bottom: 8px
+th,
+td {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 8px;
+    text-align: left;
 }
 
+/* Pie charts */
 .pie-stack {
     display: flex;
     flex-direction: column;
-    gap: 16px
+    gap: 16px;
 }
 
 .pie-wrapper {
-    background: #fff;
+    background: #112d5c;
     padding: 12px;
     border-radius: 4px;
-    border: 1px solid #ccc
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .pie-title {
     margin: 0 0 8px;
     font-size: 1rem;
-    color: #333
-}
-
-.filter-panel {
-    padding: 12px;
-    background: #fff;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    margin-bottom: 12px;
-}
-
-.filter-option {
-    margin-bottom: 8px;
+    color: #fff;
 }
 </style>
