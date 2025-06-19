@@ -1,0 +1,585 @@
+<template>
+    <div class="dashboard-container">
+        <div class="dashboard-grid">
+            <!-- Left Column: Sustainability KPIs -->
+            <section class="column">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span class="icon-wrapper leaf-icon"><i class="fas fa-leaf"></i></span>
+                        <h3>Sustainability KPIs</h3>
+                    </div>
+                    <div class="section-actions">
+                        <button class="action-btn"><i class="fas fa-info-circle"></i></button>
+                        <button class="action-btn" @click="showFilterLeft = !showFilterLeft">
+                            <i class="fas fa-filter"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Left Filter Panel -->
+                <div v-if="showFilterLeft" class="filter-panel">
+                    <h4>Select Metrics & Modules</h4>
+                    <div v-for="opt in filterOptionsLeft" :key="opt.key" class="filter-option">
+                        <input type="checkbox" :id="opt.key + '-left'" v-model="selectedLeft" :value="opt.key" />
+                        <label :for="opt.key + '-left'">
+                            {{ opt.label }}
+                            <span v-if="opt.unit">({{ opt.value }} {{ opt.unit }})</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- KPI Cards -->
+                <div class="kpi-grid-2">
+                    <div v-for="key in selectedLeft.filter(k => k !== 'table')" :key="key" class="kpi-card-wrapper">
+                        <div class="kpi-title">{{ labelMap[key] }}</div>
+                        <div class="kpi-number">{{ values[key] }}</div>
+                        <div class="kpi-unit">{{ unitMap[key] }}</div>
+                    </div>
+                </div>
+
+                <!-- Table: only if 'table' is checked -->
+                <TableCard v-if="selectedLeft.includes('table')" title="Sustainability Indicators – Detailed Breakdown"
+                    :columns="sustainTable.columns" :rows="sustainTable.rows" />
+            </section>
+
+            <!-- Middle Column: Asset Performance KPIs -->
+            <section class="column">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span class="icon-wrapper gear-icon"><i class="fas fa-cogs"></i></span>
+                        <h3>Asset Performance KPIs</h3>
+                    </div>
+                    <div class="section-actions">
+                        <button class="action-btn"><i class="fas fa-info-circle"></i></button>
+                        <button class="action-btn" @click="showFilterMiddle = !showFilterMiddle"><i
+                                class="fas fa-filter"></i></button>
+                    </div>
+                </div>
+                <!-- Middle Filter Panel -->
+                <div v-if="showFilterMiddle" class="filter-panel">
+                    <h4>Select Asset KPIs to Display</h4>
+                    <div v-for="opt in filterOptionsMiddle" :key="opt.key" class="filter-option">
+                        <input type="checkbox" :id="opt.key + '-mid'" v-model="selectedMiddle" :value="opt.key" />
+                        <label :for="opt.key + '-mid'">
+                            {{ opt.label }} ({{ opt.value }} {{ opt.unit }})
+                        </label>
+                    </div>
+                </div>
+                <div class="kpi-grid-2">
+                    <div v-for="key in selectedMiddle" :key="key" class="kpi-card-wrapper">
+                        <div class="kpi-title">{{ labelMap[key] }}</div>
+                        <div class="kpi-number">{{ values[key] }}</div>
+                        <div class="kpi-unit">{{ unitMap[key] }}</div>
+                    </div>
+                </div>
+
+                <!-- Chart Controls -->
+                <div class="controls">
+                    <select v-model="activeChart">
+                        <option v-for="opt in chartOptionsList" :key="opt.value" :value="opt.value">
+                            {{ opt.label }}
+                        </option>
+                    </select>
+                    <div class="period-toggle">
+                        <button v-for="p in periods" :key="p" :class="{ active: selectedPeriod === p }"
+                            @click="selectedPeriod = p">{{ p }}</button>
+                    </div>
+                </div>
+
+                <div class="chart-module">
+                    <div class="chart-actions">
+                        <button @click="downloadChartCSV" class="chart-btn"><i class="fas fa-download"></i></button>
+                        <button @click="toggleFullScreen" class="chart-btn"><i class="fas fa-expand"></i></button>
+                    </div>
+                    <BarChartCard :chartData="chartData" :options="chartOpts" />
+                    <div class="chart-legend">
+                        <ul>
+                            <li v-for="item in legendItems" :key="item.label">
+                                <span class="legend-color" :style="{ backgroundColor: item.color }"></span>
+                                {{ item.label }}
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <TableCard title="Statistical Analysis – System Diagnostics" :columns="systemDiagsTable.columns"
+                    :rows="systemDiagsTable.rows" />
+            </section>
+
+            <!-- Right Column: Resource Utilization Overview -->
+            <section class="column">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span class="icon-wrapper resources-icon"><i class="fas fa-chart-pie"></i></span>
+                        <h3>Resource Utilization Overview</h3>
+                    </div>
+                    <div class="section-actions">
+                        <button class="action-btn"><i class="fas fa-info-circle"></i></button>
+                        <button class="action-btn" @click="showFilterRight = !showFilterRight"><i
+                                class="fas fa-filter"></i></button>
+                    </div>
+                </div>
+                <!-- Right Filter Panel -->
+                <div v-if="showFilterRight" class="filter-panel">
+                    <h4>Select Resource Metrics</h4>
+                    <div v-for="opt in filterOptionsRight" :key="opt.key" class="filter-option">
+                        <input type="checkbox" :id="opt.key + '-right'" v-model="selectedRight" :value="opt.key" />
+                        <label :for="opt.key + '-right'">
+                            {{ opt.label }} ({{ opt.value }} {{ opt.unit }})
+                        </label>
+                    </div>
+                </div>
+                <div class="kpi-grid-2">
+                    <div v-for="key in selectedRight" :key="key" class="kpi-card-wrapper">
+                        <div class="kpi-title">{{ labelMap[key] }}</div>
+                        <div class="kpi-number">{{ values[key] }}</div>
+                        <div class="kpi-unit">{{ unitMap[key] }}</div>
+                    </div>
+                </div>
+                <div class="pie-stack">
+                    <div class="pie-wrapper">
+                        <h4 class="pie-title">{{ labelMap.EnergySourceDistPie }}</h4>
+                        <PieChartCard :chartData="baseCharts.EnergySourceDistPie[selectedPeriod]" :options="pieOpts" />
+                    </div>
+                    <div class="pie-wrapper">
+                        <h4 class="pie-title">{{ labelMap.WaterEfficiencyPie }}</h4>
+                        <PieChartCard :chartData="baseCharts.WaterEfficiencyPie[selectedPeriod]" :options="pieOpts" />
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</template>
+
+<script setup>
+import { ref, reactive, computed } from 'vue'
+import BarChartCard from '../components/BarChartCard.vue'
+import PieChartCard from '../components/PieChartCard.vue'
+import TableCard from '../components/TableCard.vue'
+
+// filter toggles
+const showFilterLeft = ref(false)
+const showFilterMiddle = ref(false)
+const showFilterRight = ref(false)
+
+// filter options
+const filterOptionsLeft = reactive([
+    { key: 'ElectricalConsumption', label: 'Electrical Consumption', value: 56105, unit: 'kWh' },
+    { key: 'EnergyUseIntensity', label: 'Energy Use Intensity', value: 122.43, unit: 'kWh/m²/year' },
+    { key: 'WaterConsumption', label: 'Water Consumption', value: 83, unit: 'm³' },
+    { key: 'WaterUseIntensity', label: 'Water Use Intensity', value: 0.18, unit: 'm³/man/day' },
+    { key: 'ExtraMetric1', label: 'Extra Metric 1', value: 123, unit: 'Units' },
+    { key: 'ExtraMetric2', label: 'Extra Metric 2', value: 456, unit: 'Units' },
+    { key: 'table', label: 'Show Breakdown Table', value: '', unit: '' }
+])
+const filterOptionsMiddle = reactive([
+    { key: 'AvgLoadCapacity', label: 'Avg Load / Capacity', value: '473 / 4,400', unit: 'TR' },
+    { key: 'ChillerEfficiency', label: 'Chiller Efficiency', value: 1.797, unit: 'kW/RT' },
+])
+const filterOptionsRight = reactive([
+    { key: 'ElecIncoming', label: "Today's Electrical Incoming", value: 24000, unit: 'kWh' },
+    { key: 'Solar', label: "Today's Solar Generation", value: 3200, unit: 'kWh' },
+])
+
+// selected by default
+const selectedLeft = ref(filterOptionsLeft.map(o => o.key))
+const selectedMiddle = ref(filterOptionsMiddle.map(o => o.key))
+const selectedRight = ref(filterOptionsRight.map(o => o.key))
+
+// build values / labels / units maps
+const values = reactive({
+    ...filterOptionsLeft.reduce((a, o) => (a[o.key] = o.value, a), {}),
+    ...filterOptionsMiddle.reduce((a, o) => (a[o.key] = o.value, a), {}),
+    ...filterOptionsRight.reduce((a, o) => (a[o.key] = o.value, a), {}),
+})
+const labelMap = reactive({
+    ...filterOptionsLeft.reduce((a, o) => (a[o.key] = o.label, a), {}),
+    ...filterOptionsMiddle.reduce((a, o) => (a[o.key] = o.label, a), {}),
+    ...filterOptionsRight.reduce((a, o) => (a[o.key] = o.label, a), {}),
+    EnergySourceDistPie: 'Energy Source Dist.', WaterEfficiencyPie: 'Water Efficiency Break.'
+})
+const unitMap = reactive({
+    ...filterOptionsLeft.reduce((a, o) => (a[o.key] = o.unit, a), {}),
+    ...filterOptionsMiddle.reduce((a, o) => (a[o.key] = o.unit, a), {}),
+    ...filterOptionsRight.reduce((a, o) => (a[o.key] = o.unit, a), {}),
+})
+
+// tables
+const sustainTable = reactive({
+    columns: ['Indicator', 'Current Value', 'Target', 'Unit', 'Change %'],
+    rows: [
+        { Indicator: 'Scope 1 CO₂', 'Current Value': '1,200', Target: '1,000', Unit: 't', 'Change %': '-20%' },
+        { Indicator: 'Scope 2 CO₂', 'Current Value': '3,400', Target: '3,200', Unit: 't', 'Change %': '-6%' },
+        { Indicator: 'Scope 3 CO₂', 'Current Value': '2,500', Target: '2,000', Unit: 't', 'Change %': '-20%' },
+    ]
+})
+const systemDiagsTable = reactive({
+    columns: ['Report', 'Status', 'Last Run', 'Duration', 'Errors'],
+    rows: [
+        { Report: 'Report A', Status: 'OK', 'Last Run': '2025-06-11', Duration: '2m', Errors: '0' },
+        { Report: 'Report B', Status: 'Warning', 'Last Run': '2025-06-11', Duration: '3m', Errors: '1' },
+        { Report: 'Report C', Status: 'OK', 'Last Run': '2025-06-11', Duration: '1m', Errors: '0' },
+    ]
+})
+
+// chart controls
+const activeChart = ref('EnergyConsumptionTrend')
+const chartOptionsList = [{ value: 'WaterConsumptionTrend', label: 'Water' }, { value: 'EnergyConsumptionTrend', label: 'Electricity' }]
+const periods = ['1D', '1W', '1M', '3M', '6M', '1Y']
+const selectedPeriod = ref('1W')
+
+// helpers
+const randomData = (len, min, max) => Array.from({ length: len }, () => Math.floor(Math.random() * (max - min) + min))
+const last7 = () => ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+
+// base chart data
+const baseCharts = reactive({
+    EnergyConsumptionTrend: {
+        '1D': {
+            labels: ['Now'], datasets: [
+                { label: 'Unocc-Prev', data: [5000], backgroundColor: '#1976d2' },
+                { label: 'Occ-Prev', data: [6000], backgroundColor: '#388e3c' },
+                { label: 'Occ-Pres', data: [7000], backgroundColor: '#f57c00' }]
+        },
+        '1W': {
+            labels: last7(), datasets: [
+                { label: 'Unocc-Prev', data: randomData(7, 2000, 10000), backgroundColor: '#1976d2' },
+                { label: 'Occ-Prev', data: randomData(7, 2000, 10000), backgroundColor: '#388e3c' },
+                { label: 'Occ-Pres', data: randomData(7, 2000, 10000), backgroundColor: '#f57c00' }]
+        },
+        '1M': {
+            labels: Array.from({ length: 30 }, (_, i) => `Day ${i + 1}`), datasets: [
+                { label: 'Unocc-Prev', data: randomData(30, 2000, 10000), backgroundColor: '#1976d2' },
+                { label: 'Occ-Prev', data: randomData(30, 2000, 10000), backgroundColor: '#388e3c' },
+                { label: 'Occ-Pres', data: randomData(30, 2000, 10000), backgroundColor: '#f57c00' }]
+        },
+        '3M': {
+            labels: ['Jan', 'Feb', 'Mar'], datasets: [
+                { label: 'Unocc-Prev', data: randomData(3, 20000, 90000), backgroundColor: '#1976d2' },
+                { label: 'Occ-Prev', data: randomData(3, 20000, 90000), backgroundColor: '#388e3c' },
+                { label: 'Occ-Pres', data: randomData(3, 20000, 90000), backgroundColor: '#f57c00' }]
+        },
+        '6M': {
+            labels: ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'], datasets: [
+                { label: 'Unocc-Prev', data: randomData(6, 20000, 100000), backgroundColor: '#1976d2' },
+                { label: 'Occ-Prev', data: randomData(6, 20000, 100000), backgroundColor: '#388e3c' },
+                { label: 'Occ-Pres', data: randomData(6, 20000, 100000), backgroundColor: '#f57c00' }]
+        },
+        '1Y': {
+            labels: ['Q1', 'Q2', 'Q3', 'Q4'], datasets: [
+                { label: 'Unocc-Prev', data: randomData(4, 100000, 300000), backgroundColor: '#1976d2' },
+                { label: 'Occ-Prev', data: randomData(4, 100000, 300000), backgroundColor: '#388e3c' },
+                { label: 'Occ-Pres', data: randomData(4, 100000, 300000), backgroundColor: '#f57c00' }]
+        },
+    },
+    WaterConsumptionTrend: {
+        '1D': {
+            labels: ['Now'], datasets: [
+                { label: 'Unocc-Prev', data: [150], backgroundColor: '#0288d1' },
+                { label: 'Occ-Pres', data: [180], backgroundColor: '#f57c00' }]
+        },
+        '1W': {
+            labels: last7(), datasets: [
+                { label: 'Unocc-Prev', data: randomData(7, 100, 200), backgroundColor: '#0288d1' },
+                { label: 'Occ-Pres', data: randomData(7, 100, 200), backgroundColor: '#f57c00' }]
+        },
+        '1M': {
+            labels: Array.from({ length: 30 }, (_, i) => `Day ${i + 1}`), datasets: [
+                { label: 'Unocc-Prev', data: randomData(30, 100, 200), backgroundColor: '#0288d1' },
+                { label: 'Occ-Pres', data: randomData(30, 100, 200), backgroundColor: '#f57c00' }]
+        },
+        '3M': {
+            labels: ['Jan', 'Feb', 'Mar'], datasets: [
+                { label: 'Unocc-Prev', data: randomData(3, 500, 2000), backgroundColor: '#0288d1' },
+                { label: 'Occ-Pres', data: randomData(3, 500, 2000), backgroundColor: '#f57c00' }]
+        },
+        '6M': {
+            labels: ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'], datasets: [
+                { label: 'Unocc-Prev', data: randomData(6, 1000, 3000), backgroundColor: '#0288d1' },
+                { label: 'Occ-Pres', data: randomData(6, 1000, 3000), backgroundColor: '#f57c00' }]
+        },
+        '1Y': {
+            labels: ['Q1', 'Q2', 'Q3', 'Q4'], datasets: [
+                { label: 'Unocc-Prev', data: randomData(4, 3000, 8000), backgroundColor: '#0288d1' },
+                { label: 'Occ-Pres', data: randomData(4, 3000, 8000), backgroundColor: '#f57c00' }]
+        },
+    },
+    EnergySourceDistPie: {
+        '1W': {
+            labels: ['Solar', 'Grid', 'Generator'], datasets: [
+                { data: [3200, 18000, 800], backgroundColor: ['#fbc02d', '#1976d2', '#c2185b'] }]
+        }
+    },
+    WaterEfficiencyPie: {
+        '1W': {
+            labels: ['PUB', 'NEWater'], datasets: [
+                { data: [38400, 33600], backgroundColor: ['#388e3c', '#0288d1'] }]
+        }
+    }
+})
+
+// computed chart data
+const chartData = computed(() => {
+    const base = (baseCharts[activeChart.value] || {})[selectedPeriod.value] || { labels: [], datasets: [] }
+    let ds = base.datasets.map(d => ({ ...d }))
+    if (activeChart.value === 'EnergyConsumptionTrend') {
+        ds.push({
+            label: 'EUI',
+            data: base.labels.map(_ => Math.random() * 0.5 + 0.8),
+            type: 'line', yAxisID: 'eui', borderColor: '#e91e63', borderWidth: 2, fill: false
+        })
+    }
+    return { labels: [...base.labels], datasets: ds }
+})
+const legendItems = computed(() => activeChart.value === 'EnergyConsumptionTrend'
+    ? [
+        { label: 'Unocc-Prev', color: '#1976d2' },
+        { label: 'Occ-Prev', color: '#388e3c' },
+        { label: 'Occ-Pres', color: '#f57c00' },
+        { label: 'EUI', color: '#e91e63' },
+    ]
+    : [
+        { label: 'Unocc-Prev', color: '#1976d2' },
+        { label: 'Occ-Pres', color: '#f57c00' },
+    ]
+)
+const chartOpts = computed(() => ({
+    responsive: true, maintainAspectRatio: false, animation: false,
+    scales: { y: { beginAtZero: true }, eui: { position: 'right', grid: { drawOnChartArea: false } } },
+    plugins: { legend: { position: 'bottom' } }
+}))
+const pieOpts = { responsive: true, plugins: { legend: { position: 'bottom' } } }
+
+// handlers
+function downloadChartCSV() {
+    const { labels, datasets } = chartData.value
+    const header = ['Label', ...datasets.map(d => d.label)].join(',')
+    const rows = labels.map((l, i) => [l, ...datasets.map(d => d.data[i])].join(','))
+    const csv = [header, ...rows].join('\r\n')
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a'); link.href = URL.createObjectURL(blob)
+    link.download = `${activeChart.value}_${selectedPeriod.value}.csv`
+    document.body.appendChild(link); link.click(); document.body.removeChild(link)
+}
+function toggleFullScreen() {
+    const el = document.querySelector('.chart-module')
+    if (!document.fullscreenElement) el.requestFullscreen()
+    else document.exitFullscreen()
+}
+</script>
+
+<style scoped>
+.dashboard-container {
+    padding: 16px;
+    background: #f5f5f5
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px
+}
+
+.column {
+    background: #fff;
+    border-radius: 8px;
+    padding: 12px
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px
+}
+
+.section-title h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: #333
+}
+
+.icon-wrapper {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #1976d2;
+    border-radius: 50%;
+    color: #fff
+}
+
+.section-actions button {
+    background: none;
+    border: none;
+    color: #666;
+    margin-left: 8px;
+    cursor: pointer
+}
+
+.kpi-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-bottom: 12px
+}
+
+.kpi-card-wrapper {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 4px 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 90px
+}
+
+.kpi-title {
+    font-size: 0.75rem;
+    color: #666;
+    margin-bottom: 4px
+}
+
+.kpi-number {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #000;
+    margin-bottom: 2px
+}
+
+.kpi-unit {
+    font-size: 0.75rem;
+    color: #333
+}
+
+.controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 12px
+}
+
+.controls select {
+    padding: 4px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px
+}
+
+.period-toggle {
+    display: flex;
+    gap: 4px
+}
+
+.period-toggle button {
+    padding: 4px 8px;
+    border: 1px solid #ccc;
+    background: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.75rem
+}
+
+.period-toggle button.active {
+    background: #1976d2;
+    color: #fff;
+    border-color: #1976d2
+}
+
+.chart-module {
+    position: relative;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 12px;
+    margin-bottom: 12px;
+    background: #fff;
+    height: 300px
+}
+
+.chart-actions {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex;
+    gap: 8px
+}
+
+.chart-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    color: #666
+}
+
+.chart-legend ul {
+    display: flex;
+    gap: 12px;
+    list-style: none;
+    padding: 0;
+    margin-top: 8px
+}
+
+.chart-legend li {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.8rem
+}
+
+.legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px
+}
+
+.filter-panel {
+    padding: 12px;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 12px
+}
+
+.filter-option {
+    margin-bottom: 8px
+}
+
+.pie-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 16px
+}
+
+.pie-wrapper {
+    background: #fff;
+    padding: 12px;
+    border-radius: 4px;
+    border: 1px solid #ccc
+}
+
+.pie-title {
+    margin: 0 0 8px;
+    font-size: 1rem;
+    color: #333
+}
+
+.filter-panel {
+    padding: 12px;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 12px;
+}
+
+.filter-option {
+    margin-bottom: 8px;
+}
+</style>

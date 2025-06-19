@@ -50,6 +50,12 @@
                             <span class="link-text">Water Management</span>
                         </router-link>
                     </li>
+                    <li>
+                        <router-link to="/unified-dashboard" class="menu-link">
+                            <i class="fas fa-tint"></i>
+                            <span class="link-text">Unified Dashboard</span>
+                        </router-link>
+                    </li>
                 </ul>
             </div>
         </nav>

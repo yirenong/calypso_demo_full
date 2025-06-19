@@ -1,7 +1,6 @@
 <template>
     <div class="water-management-container">
-        <!-- ─────────────────────────────────────────────────────────────────────────── -->
-        <!--  A) PAGE HEADER  -->
+        <!-- A) PAGE HEADER -->
         <div class="page-header">
             <h2 class="page-title">Water Management</h2>
             <nav class="breadcrumb">
@@ -11,70 +10,61 @@
             </nav>
         </div>
 
-        <!-- ─────────────────────────────────────────────────────────────────────────── -->
-        <!--  B) TAB NAVIGATION  -->
+        <!-- B) PRIMARY TAB NAV -->
         <div class="tab-nav">
-            <button :class="{ active: currentTab === 'usage' }" @click="currentTab = 'usage'">
-                Campus Water Usage
-            </button>
-            <button :class="{ active: currentTab === 'sustain' }" @click="currentTab = 'sustain'">
-                Sustainability Indicators
-            </button>
-            <button :class="{ active: currentTab === 'stats' }" @click="currentTab = 'stats'">
-                Statistical Analysis
-            </button>
-            <button :class="{ active: currentTab === 'download' }" @click="currentTab = 'download'">
-                Download Data
+            <button :class="{ active: currentTab === 'usage' }" @click="currentTab = 'usage'">Campus Water
+                Usage</button>
+            <button :class="{ active: currentTab === 'sustain' }" @click="currentTab = 'sustain'">Sustainability
+                Indicators</button>
+            <button :class="{ active: currentTab === 'stats' }" @click="currentTab = 'stats'">Statistical
+                Analysis</button>
+            <button :class="{ active: currentTab === 'download' }" @click="currentTab = 'download'">Download
+                Data</button>
+        </div>
+
+        <!-- C) SECONDARY TAB NAV -->
+        <div v-if="currentTab !== 'download'" class="sub-tab-nav">
+            <button v-for="campus in campusTabs" :key="campus" :class="{ active: currentSubTab === campus }"
+                @click="currentSubTab = campus">
+                {{ campus }}
             </button>
         </div>
 
-        <!-- ─────────────────────────────────────────────────────────────────────────── -->
-        <!--  1) CAMPUS WATER USAGE TAB  -->
+        <!-- D) USAGE TAB -->
         <div v-if="currentTab === 'usage'" class="tab-content">
-            <h2 class="tab-heading">Campus Water Usage</h2>
+            <h2 class="tab-heading">{{ currentSubTab }} Water Usage</h2>
 
-            <!-- ───────────────────────── TOP ROW: 5 METRIC CARDS ───────────────────── -->
+            <!-- 1) TOP ROW -->
             <div class="usage-top-grid">
-                <div v-for="(type, idx) in topMetrics" :key="'top-metric-' + idx" class="card-wrapper value-card">
+                <div v-for="type in topMetrics" :key="type" class="card-wrapper value-card">
                     <component :is="componentMap[type]" v-bind="generateProps(type)" />
                 </div>
             </div>
 
-            <!-- NEW: “pie, chart, chart, pie” (4 equal columns) -->
+            <!-- 2) MID ROW -->
             <div class="usage-mid-grid">
-                <!-- 1) Left‐most pie: “Water Efficiency” -->
                 <div class="card-wrapper gauge-card">
                     <component :is="componentMap['WaterEfficiency']" v-bind="generateProps('WaterEfficiency')" />
                 </div>
-
-                <!-- 2) Middle‐left chart: “Tenant Water Meters” -->
                 <div class="card-wrapper chart-card">
                     <component :is="componentMap['TenantWaterMetersBar']"
                         v-bind="generateProps('TenantWaterMetersBar')" />
                 </div>
-
-                <!-- 3) Middle‐right chart: “Water Consumption by Block” -->
                 <div class="card-wrapper chart-card">
                     <component :is="componentMap['WaterConsumptionByBlockBar']"
                         v-bind="generateProps('WaterConsumptionByBlockBar')" />
                 </div>
-
-                <!-- 4) Right‐most pie: “Airside Efficiency” -->
                 <div class="card-wrapper gauge-card">
                     <component :is="componentMap['AirsideEfficiency']" v-bind="generateProps('AirsideEfficiency')" />
                 </div>
             </div>
 
-
-            <!-- ───────────────────────── BOTTOM ROW: WIDE BAR | STACKED | WIDE BAR ───────────────────────── -->
+            <!-- 3) BOTTOM ROW -->
             <div class="usage-bottom-grid">
-                <!-- 1) “Energy Consumption by Block” spans 2 columns -->
                 <div class="card-wrapper chart-card span-2">
                     <component :is="componentMap['EnergyConsumptionByBlockBar']"
                         v-bind="generateProps('EnergyConsumptionByBlockBar')" />
                 </div>
-
-                <!-- 2) Stacked: “Solar generated” above “Tenant Energy Meters” (1 column) -->
                 <div class="stacked-card-container">
                     <div class="card-wrapper chart-card small-chart">
                         <component :is="componentMap['SolarGeneratedLine']"
@@ -85,8 +75,6 @@
                             v-bind="generateProps('TenantEnergyMetersBar')" />
                     </div>
                 </div>
-
-                <!-- 3) “Water Consumption by Block” spans 2 columns -->
                 <div class="card-wrapper chart-card span-2">
                     <component :is="componentMap['WaterConsumptionByBlockBar']"
                         v-bind="generateProps('WaterConsumptionByBlockBar')" />
@@ -94,46 +82,41 @@
             </div>
         </div>
 
-        <!-- ─────────────────────────────────────────────────────────────────────────── -->
-        <!--  2) SUSTAINABILITY INDICATORS TAB  -->
+        <!-- SUSTAIN -->
         <div v-if="currentTab === 'sustain'" class="tab-content">
-            <h2 class="tab-heading">Sustainability Indicators</h2>
+            <h2 class="tab-heading">{{ currentSubTab }} Sustainability Indicators</h2>
             <div class="cards-grid">
-                <div v-for="(tbl, idx) in sustainTables" :key="'sustain-table-' + idx" class="card-wrapper chart-card">
+                <div v-for="(tbl, i) in sustainTables" :key="i" class="card-wrapper chart-card">
                     <TableCard :title="tbl.title" :columns="tbl.columns" :rows="tbl.rows" />
                 </div>
             </div>
         </div>
 
-        <!-- ─────────────────────────────────────────────────────────────────────────── -->
-        <!--  3) STATISTICAL ANALYSIS TAB  -->
+        <!-- STATS -->
         <div v-if="currentTab === 'stats'" class="tab-content">
-            <h2 class="tab-heading">Statistical Analysis</h2>
+            <h2 class="tab-heading">{{ currentSubTab }} Statistical Analysis</h2>
             <div class="cards-grid">
-                <div v-for="(tbl, idx) in statsTables" :key="'stats-table-' + idx" class="card-wrapper chart-card">
+                <div v-for="(tbl, i) in statsTables" :key="i" class="card-wrapper chart-card">
                     <TableCard :title="tbl.title" :columns="tbl.columns" :rows="tbl.rows" />
                 </div>
             </div>
         </div>
 
-        <!-- ─────────────────────────────────────────────────────────────────────────── -->
-        <!--  4) DOWNLOAD DATA TAB  -->
+        <!-- DOWNLOAD -->
         <div v-if="currentTab === 'download'" class="tab-content">
             <h2 class="tab-heading">Download Full Dataset (CSV)</h2>
             <button class="download-button" @click="downloadCSV">
-                <i class="fas fa-download"></i>
-                <span>Download CSV</span>
+                <i class="fas fa-download"></i> Download CSV
             </button>
             <p class="note">
-                The CSV contains one row per “type” (metric, chart, or table), along with its latest
-                value, last‐7‐days data, or table contents as JSON.
+                CSV includes one row per metric/chart/table, with recent values or JSON.
             </p>
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref, watch, onMounted, nextTick } from 'vue'
+import { ref, watch } from 'vue'
 import BarChartCard from '../components/BarChartCard.vue'
 import LineChartCard from '../components/LineChartCard.vue'
 import PieChartCard from '../components/PieChartCard.vue'
@@ -141,389 +124,139 @@ import ValueCard from '../components/ValueCard.vue'
 import TableCard from '../components/TableCard.vue'
 import DateSliderCard from '../components/DateSliderCard.vue'
 
-// ───────────────────────────────────────────────────────────────────────────────
-// 1) “Campus Water Usage” original types (for CSV logic, etc.)
-// ───────────────────────────────────────────────────────────────────────────────
-const waterMetricTypes = [
-    'PubIncoming',
-    'NeWaterIncoming',
-    'CampusUsage',
-    'CampusWUI'
+// 1) Tab state
+const currentTab = ref('usage')
+const campusTabs = [
+    'ITE CC & HQ',
+    'Block A Auditorium', 'Block A Admin', 'Block B', 'Block C', 'Block D', 'Block E', 'Block F', 'Block G', 'Block H', 'Block J', 'Block K'
 ]
-const waterPieCharts = ['WaterSourceDistPie', 'WaterUsageDistPie']
-const waterBarCharts = [
-    'WaterSourceDistBar',
-    'CampusWUIBar',
-    'WaterIntakeBar',
-    'WaterConsumptionTrendBar'
-]
+const currentSubTab = ref(campusTabs[0])
+watch(currentTab, t => { if (t !== 'download') currentSubTab.value = campusTabs[0] })
 
-// ───────────────────────────────────────────────────────────────────────────────
-// 2) NEW arrays for the redesigned “Usage” tab
-// ───────────────────────────────────────────────────────────────────────────────
-// Top‐row metric keys:
-const topMetrics = [
-    'TSE',           // e.g. “TSE (kW/RT)”
-    'EUI',           // e.g. “EUI (kWh/m²/yr)”
-    'FilterEnergy',  // Date slider for energy
-    'WaterCUM',      // e.g. “Water (Cu.M)”
-    'WEI'            // e.g. “WEI (litres/person/day)”
-]
-
-// Middle‐row gauge keys:
-const gaugeCards = [
-    'WaterEfficiency',   // “Water Efficiency (kW/RT)”
-    'AirsideEfficiency'  // “Airside Efficiency (kW/RT)”
-]
-
-// Bottom‐row chart keys:
-const usageBottomCharts = [
-    'EnergyConsumptionByBlockBar',
-    'SolarGeneratedLine',
-    'TenantEnergyMetersBar',
-    'WaterConsumptionByBlockBar'
-]
-
-// ───────────────────────────────────────────────────────────────────────────────
-// 3) “Sustainability Indicators” tables
-// ───────────────────────────────────────────────────────────────────────────────
+// 2) Metrics & tables
+const topMetrics = ['TSE', 'EUI', 'FilterEnergy', 'WaterCUM', 'WEI']
 const sustainTables = [
     {
-        title: 'Sustainability Indicators – Detailed Breakdown',
-        columns: ['Indicator', 'Current Value', 'Target', 'Unit', 'Change %'],
-        rows: [
+        title: 'Sustainability Indicators – Detailed Breakdown', columns: ['Indicator', 'Current Value', 'Target', 'Unit', 'Change %'], rows: [
             { Indicator: 'Scope 1 CO₂', 'Current Value': '1,200', Target: '1,000', Unit: 't', 'Change %': '-20%' },
             { Indicator: 'Scope 2 CO₂', 'Current Value': '3,400', Target: '3,200', Unit: 't', 'Change %': '-6%' },
             { Indicator: 'Scope 3 CO₂', 'Current Value': '2,500', Target: '2,000', Unit: 't', 'Change %': '-20%' },
-            { Indicator: 'Total Water Use', 'Current Value': '  500', Target: '  450', Unit: 'm³', 'Change %': '-10%' },
-            { Indicator: 'Total Energy Use', 'Current Value': '10,000', Target: ' 9,000', Unit: 'kWh', 'Change %': '-10%' },
-            { Indicator: 'Waste Generated', 'Current Value': '   75', Target: '   60', Unit: 't', 'Change %': '-20%' }
+            { Indicator: 'Total Water Use', 'Current Value': '500', Target: '450', Unit: 'm³', 'Change %': '-10%' },
+            { Indicator: 'Total Energy Use', 'Current Value': '10,000', Target: '9,000', Unit: 'kWh', 'Change %': '-10%' },
+            { Indicator: 'Waste Generated', 'Current Value': '75', Target: '60', Unit: 't', 'Change %': '-20%' }
         ]
     }
 ]
-
-// ───────────────────────────────────────────────────────────────────────────────
-// 4) “Statistical Analysis” tables
-// ───────────────────────────────────────────────────────────────────────────────
 const statsTables = [
     {
-        title: 'Statistical Analysis – CCTV Analytics Metrics',
-        columns: ['Metric', 'Value', 'Threshold', 'Alert', 'Last Updated'],
-        rows: [
+        title: 'Statistical Analysis – CCTV Analytics Metrics', columns: ['Metric', 'Value', 'Threshold', 'Alert', 'Last Updated'], rows: [
             { Metric: 'Motion Alerts', Value: '12', Threshold: '10', Alert: 'Yes', 'Last Updated': '2025-06-10' },
-            { Metric: 'Object Alerts', Value: ' 5', Threshold: ' 8', Alert: 'No', 'Last Updated': '2025-06-10' },
-            { Metric: 'Person Detections', Value: ' 3', Threshold: ' 2', Alert: 'Yes', 'Last Updated': '2025-06-10' },
-            { Metric: 'Loitering Alerts', Value: ' 7', Threshold: ' 5', Alert: 'Yes', 'Last Updated': '2025-06-10' },
-            { Metric: 'False Positives', Value: ' 4', Threshold: ' 6', Alert: 'No', 'Last Updated': '2025-06-10' }
+            { Metric: 'Object Alerts', Value: '5', Threshold: '8', Alert: 'No', 'Last Updated': '2025-06-10' },
+            { Metric: 'Person Detections', Value: '3', Threshold: '2', Alert: 'Yes', 'Last Updated': '2025-06-10' },
+            { Metric: 'Loitering Alerts', Value: '7', Threshold: '5', Alert: 'Yes', 'Last Updated': '2025-06-10' },
+            { Metric: 'False Positives', Value: '4', Threshold: '6', Alert: 'No', 'Last Updated': '2025-06-10' }
         ]
     },
     {
-        title: 'Statistical Analysis – System Diagnostics',
-        columns: ['Report', 'Status', 'Last Run', 'Duration', 'Errors'],
-        rows: [
-            { Report: 'Report A', Status: 'OK', 'Last Run': '2025-06-11', Duration: ' 2m', Errors: '0' },
-            { Report: 'Report B', Status: 'Warning', 'Last Run': '2025-06-11', Duration: ' 3m', Errors: '1' },
-            { Report: 'Report C', Status: 'OK', 'Last Run': '2025-06-11', Duration: ' 1m', Errors: '0' },
-            { Report: 'Report D', Status: 'Error', 'Last Run': '2025-06-11', Duration: ' 4m', Errors: '3' },
-            { Report: 'Report E', Status: 'OK', 'Last Run': '2025-06-11', Duration: ' 2m', Errors: '0' }
+        title: 'Statistical Analysis – System Diagnostics', columns: ['Report', 'Status', 'Last Run', 'Duration', 'Errors'], rows: [
+            { Report: 'Report A', Status: 'OK', 'Last Run': '2025-06-11', Duration: '2m', Errors: '0' },
+            { Report: 'Report B', Status: 'Warning', 'Last Run': '2025-06-11', Duration: '3m', Errors: '1' },
+            { Report: 'Report C', Status: 'OK', 'Last Run': '2025-06-11', Duration: '1m', Errors: '0' },
+            { Report: 'Report D', Status: 'Error', 'Last Run': '2025-06-11', Duration: '4m', Errors: '3' },
+            { Report: 'Report E', Status: 'OK', 'Last Run': '2025-06-11', Duration: '2m', Errors: '0' }
         ]
     }
 ]
 
-// ───────────────────────────────────────────────────────────────────────────────
-// 5) Friendly labels for all “type” strings
-// ───────────────────────────────────────────────────────────────────────────────
+// 3) Labels & components
 const labelMap = {
-    // Original Usage:
-    PubIncoming: "Today's PUB Water Incoming (m³)",
-    NeWaterIncoming: "Today's NEWater Incoming (m³)",
-    CampusUsage: "Today's Campus Water Usage (m³)",
-    CampusWUI: 'Campus WUI (m³/population)',
-    WaterSourceDistPie: 'Water Source Distribution (Pie)',
-    WaterUsageDistPie: 'Water Usage Distribution (Pie)',
-    WaterSourceDistBar: 'Water Source Trends (Bar)',
-    CampusWUIBar: 'Campus WUI Trend (Bar)',
-    WaterIntakeBar: 'Water Intake Sources (Stacked Bar)',
-    WaterConsumptionTrendBar: 'Water Consumption Trend (Bar)',
-
-    // New Top‐Row Metrics:
-    TSE: 'PUB Water (Today) Incoming (m3)',
-    EUI: 'NEWater (Today) Incoming (m3)',
-    FilterEnergy: 'Filter Energy: Date Between',
-    WaterCUM: 'Campus Water (Today) Incoming (m3)',
-    WEI: 'Campus WUI (m3/population)',
-
-    // New Middle‐Row Gauges:
-    WaterEfficiency: 'Water Source Distribution',
-    AirsideEfficiency: 'Water Intake Sources',
-
-    // (If you ever need the actual gauge‐pie label, e.g. “Water Efficiency”)
-    // For demonstration, we treat gauge charts as PieChartCard with random data.
-
-    // New Middle‐Row Pie:
-    EnergyByProportionPie: 'Energy by Proportion',
-    WaterByProportionPie: 'Water by Proportion',
-
-    // New Middle‐Row Bar:
-    TenantWaterMetersBar: 'Water Source Distribution',
-
-    // New Bottom‐Row Bars/Lines:
-    EnergyConsumptionByBlockBar: 'Water Intake Sources',
-    SolarGeneratedLine: 'Water Intake Sources',
-    TenantEnergyMetersBar: 'Water Usage Distribution',
-    WaterConsumptionByBlockBar: 'Campus WUI (m3/population)'
+    TSE: "PUB Water (Today) Incoming (m³)",
+    EUI: "NEWater (Today) Incoming (m³)",
+    FilterEnergy: "Filter Energy: Date Between",
+    WaterCUM: "Campus Water (Today) Incoming (m³)",
+    WEI: "Campus WUI (ℓ/person/day)",
+    WaterEfficiency: 'PUB vs NEWater',
+    AirsideEfficiency: 'Building Breakdown',
+    TenantWaterMetersBar: 'Water by Building (m³)',
+    WaterConsumptionByBlockBar: 'Block-wise Water (m³)',
+    EnergyConsumptionByBlockBar: 'Block-wise Energy (kWh)',
+    SolarGeneratedLine: 'Solar Generation (kWh)',
+    TenantEnergyMetersBar: 'Energy by Building (kWh)'
 }
-
-// ───────────────────────────────────────────────────────────────────────────────
-// 6) Map each “type” → its Vue component
-// ───────────────────────────────────────────────────────────────────────────────
 const componentMap = {
-    // Original Usage:
-    PubIncoming: ValueCard,
-    NeWaterIncoming: ValueCard,
-    CampusUsage: ValueCard,
-    CampusWUI: ValueCard,
-    WaterSourceDistPie: PieChartCard,
-    WaterUsageDistPie: PieChartCard,
-    WaterSourceDistBar: BarChartCard,
-    CampusWUIBar: BarChartCard,
-    WaterIntakeBar: BarChartCard,
-    WaterConsumptionTrendBar: BarChartCard,
-
-    // Top‐Row metrics:
-    TSE: ValueCard,
-    EUI: ValueCard,
-    FilterEnergy: DateSliderCard,
-    WaterCUM: ValueCard,
-    WEI: ValueCard,
-
-    // Middle‐Row Gauges (rendered as pie charts for demo):
-    WaterEfficiency: PieChartCard,
-    AirsideEfficiency: PieChartCard,
-
-    // Middle‐Row Pie (if you ever need to show a separate “Energy by Proportion” below):
-    EnergyByProportionPie: PieChartCard,
-    WaterByProportionPie: PieChartCard,
-
-    // Middle‐Row Bar:
+    TSE: ValueCard, EUI: ValueCard, FilterEnergy: DateSliderCard,
+    WaterCUM: ValueCard, WEI: ValueCard,
+    WaterEfficiency: PieChartCard, AirsideEfficiency: PieChartCard,
     TenantWaterMetersBar: BarChartCard,
-
-    // Bottom‐Row:
+    WaterConsumptionByBlockBar: BarChartCard,
     EnergyConsumptionByBlockBar: BarChartCard,
     SolarGeneratedLine: LineChartCard,
-    TenantEnergyMetersBar: BarChartCard,
-    WaterConsumptionByBlockBar: BarChartCard
+    TenantEnergyMetersBar: BarChartCard
 }
 
-// ───────────────────────────────────────────────────────────────────────────────
-// 7) Helpers for random data & last-7-days labels (demo only)
-// ───────────────────────────────────────────────────────────────────────────────
-function last7Days() {
-    const days = []
-    for (let i = 6; i >= 0; i--) {
-        const d = new Date()
-        d.setDate(d.getDate() - i)
-        days.push(d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }))
-    }
-    return days
-}
-const labels7 = last7Days()
-
-function randomArray(len, max = 100) {
-    return Array.from({ length: len }, () => Math.floor(Math.random() * max))
-}
-
+// 4) Data & options
+const aggregatedValues = { TSE: 38400, EUI: 33600, WaterCUM: 72000, WEI: 120 }
+const buildingValues = { TSE: 3200, EUI: 2800, WaterCUM: 6000, WEI: 120 }
 const chartOptions = {
     responsive: true,
-    scales: { y: { beginAtZero: true } }
+    scales: {
+        x: { ticks: { color: 'white' } },
+        y: { ticks: { color: 'white' }, grid: { color: 'rgba(255,255,255,0.2)' } }
+    }
 }
+const pieOptions = { responsive: true, plugins: { legend: { display: false } } }
 
-// ───────────────────────────────────────────────────────────────────────────────
-// 8) Determine if a “type” is a ValueCard (metric) vs. a chart
-//    **Now includes the new top-row keys so they show a numeric value**
-// ───────────────────────────────────────────────────────────────────────────────
-function isMetric(type) {
-    return [
-        'PubIncoming',
-        'NeWaterIncoming',
-        'CampusUsage',
-        'CampusWUI',
-        'TSE',
-        'EUI',
-        'WaterCUM',
-        'WEI'
-    ].includes(type)
-}
+// 5) Bar color palette
+const barColorPalette = ['#1976d2', '#388e3c', '#f57c00', '#c2185b', '#7b1fa2', '#0097a7', '#d32f2f', '#ffa000', '#689f38', '#0288d1', '#512da8']
+function assignBarColors(labels) { return labels.map((_, i) => barColorPalette[i % barColorPalette.length]) }
 
-// ───────────────────────────────────────────────────────────────────────────────
-// 9) Build props on the fly for each card
-//    - If isMetric(type), return { title, value }
-//    - Else (any chart), return { title, chartData, options }
-// ───────────────────────────────────────────────────────────────────────────────
+// 6) Helpers
+function last7Days() { return Array.from({ length: 7 }, (_, i) => { const d = new Date(); d.setDate(d.getDate() - 6 + i); return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) }) }
+function randomArray(len, max = 500) { return Array.from({ length: len }, () => Math.floor(Math.random() * max + 50)) }
+const labels7 = last7Days()
+
+// 7) Props generator
 function generateProps(type) {
-    if (isMetric(type)) {
-        return {
-            title: labelMap[type] || type,
-            value: randomArray(1, 10000)[0]
-        }
-    } else {
-        return {
-            title: labelMap[type] || type,
-            chartData: {
-                labels: labels7,
-                datasets: [
-                    {
-                        label: labelMap[type],
-                        data: randomArray(7)
-                    }
-                ]
-            },
-            options: type.endsWith('Pie') ? { responsive: true } : chartOptions
-        }
+    const isPie = ['WaterEfficiency', 'AirsideEfficiency'].includes(type)
+    if (type === 'FilterEnergy') {
+        return { title: labelMap[type], start: '2025-06-01', end: '2025-06-19', onChange: ({ start, end }) => { } }
     }
+    // HQ breakdown
+    if (currentSubTab.value === campusTabs[0] && !['TSE', 'EUI', 'WaterCUM', 'WEI', 'FilterEnergy'].includes(type)) {
+        const labels = campusTabs.slice(1)
+        const data = labels.map(() => Math.floor(Math.random() * 500 + 200))
+        return { title: labelMap[type], chartData: { labels, datasets: [{ label: labelMap[type], data, backgroundColor: assignBarColors(labels) }] }, options: isPie ? pieOptions : chartOptions }
+    }
+    // metrics
+    if (['TSE', 'EUI', 'WaterCUM', 'WEI'].includes(type)) {
+        const src = currentSubTab.value === campusTabs[0] ? aggregatedValues : buildingValues
+        return { title: labelMap[type], value: src[type] }
+    }
+    // bar charts per-block or trend
+    const barKeys = ['TenantWaterMetersBar', 'WaterConsumptionByBlockBar', 'EnergyConsumptionByBlockBar', 'TenantEnergyMetersBar']
+    if (barKeys.includes(type)) {
+        const labels = currentSubTab.value === campusTabs[0] ? campusTabs.slice(1) : labels7
+        const data = currentSubTab.value === campusTabs[0] ? labels.map(() => Math.floor(Math.random() * 500 + 200)) : randomArray(7)
+        return { title: labelMap[type], chartData: { labels, datasets: [{ label: labelMap[type], data, backgroundColor: assignBarColors(labels) }] }, options: chartOptions }
+    }
+    // fallback pie/line
+    const data = labels7.map(() => 0)
+    return { title: labelMap[type], chartData: { labels: labels7, datasets: [{ label: labelMap[type], data: randomArray(7), backgroundColor: isPie ? undefined : assignBarColors(labels7) }] }, options: isPie ? pieOptions : chartOptions }
 }
 
-// ───────────────────────────────────────────────────────────────────────────────
-// 10) Tab state
-// ───────────────────────────────────────────────────────────────────────────────
-const currentTab = ref('usage')
-
-// ───────────────────────────────────────────────────────────────────────────────
-// 11) Download CSV logic (unchanged from earlier)
-// ───────────────────────────────────────────────────────────────────────────────
+// 8) Download CSV
 function downloadCSV() {
-    const header = [
-        'Type',
-        'Friendly Label',
-        'Category',
-        'Metric/Chart/Table',
-        'Most Recent Value',
-        'Last 7 Days Data (|-separated)',
-        'Table Contents (JSON)'
-    ].join(',')
-
-    const allTypes = [
-        ...waterMetricTypes,
-        ...waterPieCharts,
-        ...waterBarCharts,
-        ...sustainTables.map((_, i) => `SustainTable${i}`),
-        ...statsTables.map((_, i) => `StatsTable${i}`)
-    ]
-
-    const rows = allTypes.map((type) => {
-        let category = ''
-        if (
-            waterMetricTypes.includes(type) ||
-            waterPieCharts.includes(type) ||
-            waterBarCharts.includes(type)
-        ) {
-            category = 'Campus Water Usage'
-        } else if (type.startsWith('SustainTable')) {
-            category = 'Sustainability Indicators'
-        } else if (type.startsWith('StatsTable')) {
-            category = 'Statistical Analysis'
+    const header = ['Type', 'Label', 'Category', 'Metric/Chart/Table', 'Most Recent Value', 'Last 7 Days Data', 'Table JSON'].join(',')
+    const all = [...topMetrics, 'WaterEfficiency', 'AirsideEfficiency', 'TenantWaterMetersBar', 'WaterConsumptionByBlockBar', 'EnergyConsumptionByBlockBar', 'SolarGeneratedLine', 'TenantEnergyMetersBar']
+    const rows = all.map(type => {
+        if (['TSE', 'EUI', 'WaterCUM', 'WEI', 'FilterEnergy'].includes(type)) {
+            return [type, `"${labelMap[type]}"`, 'Usage', 'Metric', generateProps(type).value, '', ''].join(',')
         }
-
-        // Original four metrics (PubIncoming, etc.)
-        if (waterMetricTypes.includes(type)) {
-            const val = randomArray(1, 10000)[0]
-            return [
-                type,
-                `"${labelMap[type]}"`,
-                category,
-                'Metric',
-                val,
-                '',
-                ''
-            ].join(',')
-        }
-        // Original pie/bar charts
-        else if (waterPieCharts.includes(type) || waterBarCharts.includes(type)) {
-            const arr = randomArray(7).join('|')
-            const chartType = type.endsWith('Pie') ? 'Pie Chart' : 'Bar Chart'
-            return [
-                type,
-                `"${labelMap[type]}"`,
-                category,
-                chartType,
-                '',
-                `"${arr}"`,
-                ''
-            ].join(',')
-        }
-        // Sustainability table
-        else if (type.startsWith('SustainTable')) {
-            const idx = parseInt(type.replace('SustainTable', ''), 10)
-            const tbl = sustainTables[idx]
-            const tableJSON = JSON.stringify(tbl.rows)
-            return [
-                type,
-                `"${tbl.title}"`,
-                category,
-                'Table',
-                '',
-                '',
-                `"${tableJSON}"`
-            ].join(',')
-        }
-        // Stats table
-        else if (type.startsWith('StatsTable')) {
-            const idx = parseInt(type.replace('StatsTable', ''), 10)
-            const tbl = statsTables[idx]
-            const tableJSON = JSON.stringify(tbl.rows)
-            return [
-                type,
-                `"${tbl.title}"`,
-                category,
-                'Table',
-                '',
-                '',
-                `"${tableJSON}"`
-            ].join(',')
-        }
-        return ''
+        const arr = generateProps(type).chartData.datasets[0].data.join('|')
+        return [type, `"${labelMap[type]}"`, 'Usage', 'Chart', '', arr, ''].join(',')
     })
-
-    const csvContent = [header, ...rows].join('\r\n')
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
-    const link = document.createElement('a')
-    link.href = URL.createObjectURL(blob)
-    link.setAttribute('download', 'water_management_data.csv')
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-}
-
-// ───────────────────────────────────────────────────────────────────────────────
-// 12) Persist cards ordering (drag/drop stub, unchanged)
-// ───────────────────────────────────────────────────────────────────────────────
-const cards = ref([])
-
-onMounted(() => {
-    const raw = localStorage.getItem('water-mgmt-cards')
-    if (raw) {
-        try {
-            const saved = JSON.parse(raw)
-            if (Array.isArray(saved)) cards.value = saved
-        } catch { }
-    }
-    nextTick(() => { })
-})
-
-watch(
-    () => cards.value,
-    (newVal) => {
-        localStorage.setItem('water-mgmt-cards', JSON.stringify(newVal))
-    },
-    { deep: true }
-)
-
-// ───────────────────────────────────────────────────────────────────────────────
-// 13) Handler for date slider updates (optional API refetch)
-// ───────────────────────────────────────────────────────────────────────────────
-function onDateRangeChanged({ start, end }) {
-    console.log('Date range selected:', start, '→', end)
-    // Example: fetchData({ startDate: start, endDate: end })
+    const blob = new Blob([header, ...rows].join('\r\n'), { type: 'text/csv' })
+    const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = 'water_management_data.csv'; document.body.appendChild(link); link.click(); document.body.removeChild(link)
 }
 </script>
 
@@ -537,6 +270,55 @@ function onDateRangeChanged({ start, end }) {
     background-color: #0a1f44;
     /* very dark blue */
     min-height: 100vh;
+    color: white;
+}
+
+.tab-nav button.active,
+.sub-tab-nav button.active {
+    background: #1976d2;
+    color: white;
+}
+
+/* ensure .sub-tab-nav matches .tab-nav styling */
+.sub-tab-nav {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.sub-tab-nav button {
+    padding: 6px 12px;
+    border: none;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-size: 0.9rem;
+}
+
+.sub-tab-nav button:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.sub-tab-nav {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+/* Draw a divider after the “Overall” button */
+.sub-tab-nav button:first-child {
+    padding-right: 16px;
+    border-right: 1px solid rgba(255, 255, 255, 0.3);
+    margin-right: 8px;
+}
+
+/* Active states */
+.tab-nav button.active,
+.sub-tab-nav button.active {
+    background: #1976d2;
     color: white;
 }
 
