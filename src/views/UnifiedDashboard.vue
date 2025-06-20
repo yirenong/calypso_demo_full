@@ -6,7 +6,7 @@
                 <div class="section-header">
                     <div class="section-title">
                         <span class="icon-wrapper leaf-icon"><i class="fas fa-leaf"></i></span>
-                        <h3>Environmental Impact Indicator</h3>
+                        <h3>Environmental Impact Indicators</h3>
                     </div>
                     <div class="section-actions">
                         <button class="action-btn"><i class="fas fa-info-circle"></i></button>
@@ -40,6 +40,35 @@
                 <!-- Table: only if 'table' is checked -->
                 <TableCard v-if="selectedLeft.includes('table')" title="Sustainability Indicators – Detailed Breakdown"
                     :columns="sustainTable.columns" :rows="sustainTable.rows" />
+
+                <!-- Waste Management Input & Mixed Chart -->
+                <div class="waste-section card">
+                    <h4>Waste Management Trends</h4>
+
+                    <!-- Simple data-entry form -->
+                    <div class="waste-form">
+                        <label class="waste-field">
+                            Date
+                            <input type="date" v-model="newWaste.date" />
+                        </label>
+
+                        <label class="waste-field">
+                            General (kg)
+                            <input type="number" v-model.number="newWaste.general" placeholder="e.g. 500" />
+                        </label>
+
+                        <label class="waste-field">
+                            Recycled (kg)
+                            <input type="number" v-model.number="newWaste.recycled" placeholder="e.g. 200" />
+                        </label>
+
+                        <button class="waste-add-btn" @click="addWasteData">Add</button>
+                    </div>
+
+
+                    <!-- Render mixed bar+line chart -->
+                    <MixedChartCard :chartData="wasteChartData" :options="wasteChartOpts" />
+                </div>
             </section>
 
             <!-- Middle Column: Asset Performance KPIs -->
@@ -111,7 +140,7 @@
                 <div class="section-header">
                     <div class="section-title">
                         <span class="icon-wrapper resources-icon"><i class="fas fa-chart-pie"></i></span>
-                        <h3>Water & Energy Indicator</h3>
+                        <h3>Waste Indicators</h3>
                     </div>
                     <div class="section-actions">
                         <button class="action-btn"><i class="fas fa-info-circle"></i></button>
@@ -156,15 +185,34 @@ import { ref, reactive, computed } from 'vue'
 import BarChartCard from '../components/BarChartCard.vue'
 import PieChartCard from '../components/PieChartCard.vue'
 import TableCard from '../components/TableCard.vue'
+import MixedChartCard from '../components/MixedChartCard.vue'
 
 // filter toggles
 const showFilterLeft = ref(false)
 const showFilterMiddle = ref(false)
 const showFilterRight = ref(false)
 
+const newWaste = reactive({
+    date: '',
+    eneral: null,
+    recycled: null
+})
+
+const wasteData = ref([])
+
+function addWasteData() {
+    if (!newWaste.date) return
+    // push a copy
+    wasteData.value.push({ ...newWaste })
+    // reset form
+    newWaste.date = ''
+    newWaste.general = 0
+    newWaste.recycled = 0
+}
+
 // filter options
 const filterOptionsLeft = reactive([
-    { key: 'ElectricalConsumption', label: 'Electrical Consumption', value: 56105, unit: 'kWh' },
+    { key: 'ElectricalConsumption', label: 'Building Electrical Consumption', value: 56105, unit: 'kWh' },
     { key: 'EnergyUseIntensity', label: 'Energy Use Intensity', value: 122.43, unit: 'kWh/m²/year' },
     { key: 'WaterConsumption', label: 'Water Consumption', value: 83, unit: 'm³' },
     { key: 'WaterUseIntensity', label: 'Water Use Intensity', value: 0.18, unit: 'm³/man/day' },
@@ -221,6 +269,91 @@ const systemDiagsTable = reactive({
         { Report: 'Report C', Status: 'OK', 'Last Run': '2025-06-11', Duration: '1m', Errors: '0' },
     ]
 })
+
+const wasteChartData = computed(() => {
+    // sort your entries ascending by date
+    const sorted = [...wasteData.value].sort((a, b) =>
+        new Date(a.date) - new Date(b.date)
+    );
+
+    return {
+        labels: sorted.map(d => d.date),
+        datasets: [
+            {
+                type: 'bar',
+                label: 'General',
+                data: sorted.map(d => d.general),
+                backgroundColor: '#D3D3D3',
+                order: 1              // draw bars first
+            },
+            {
+                type: 'line',
+                label: 'Recycled',
+                data: sorted.map(d => d.recycled),
+                borderColor: '#43a047',
+                borderWidth: 2,
+                fill: false,
+                tension: 0.4,
+                order: 2,             // draw line on top
+                pointBackgroundColor: '#43a047', // make sure your dots are visible
+                pointBorderColor: '#fff'
+            }
+        ]
+    }
+});
+
+
+
+
+
+const wasteChartOpts = {
+    responsive: true,
+    maintainAspectRatio: false,
+
+    // ⬇ tell Chart.js first draw ALL bars, then draw ALL lines
+    datasets: {
+        bar: { order: 1 },
+        line: { order: 2 }
+    },
+
+    scales: {
+        x: {
+            title: {
+                display: true,
+                text: 'Date',
+                color: '#fff'
+            },
+            ticks: {
+                color: '#fff'
+            }
+        },
+        y: {
+            beginAtZero: true,
+            title: {
+                display: true,
+                text: 'Kilograms',
+                color: '#fff'
+            },
+            ticks: {
+                color: '#fff'
+            }
+        }
+    },
+
+    plugins: {
+        legend: {
+            position: 'bottom',
+            labels: {
+                color: '#fff'
+            }
+        },
+        tooltip: {
+            mode: 'index',
+            intersect: false
+        }
+    }
+}
+
 
 // chart controls
 const activeChart = ref('EnergyConsumptionTrend')
@@ -418,11 +551,52 @@ function toggleFullScreen() {
     gap: 16px;
 }
 
+.waste-form {
+    display: flex;
+    align-items: flex-end;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.waste-field {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.9rem;
+    color: #fff;
+}
+
+.waste-field input {
+    margin-top: 4px;
+    padding: 0.3rem 0.5rem;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: transparent;
+    color: #fff;
+}
+
+
 /* Card backgrounds: slightly lighter than container */
 .column {
     background: #112d5c;
     border-radius: 8px;
     padding: 12px;
+}
+
+.card {
+    background: #1e3f7a;
+    /* match your KPI cards */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Optional: give the waste-section title a bit of breathing room */
+.waste-section h4 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    color: #fff;
 }
 
 /* Section header */
@@ -534,7 +708,7 @@ function toggleFullScreen() {
     /* match your card bg */
     color: #fff;
     /* selected text */
-    
+
 }
 
 .controls select {
@@ -546,15 +720,15 @@ function toggleFullScreen() {
 }
 
 .controls select option {
-  background-color: #112d5c;
-  color: #fff;
+    background-color: #112d5c;
+    color: #fff;
 }
 
 /* Highlight hovered option in list */
 .controls select option:hover,
 .controls select option:checked {
-  background-color: #1976d2;
-  color: #fff;
+    background-color: #1976d2;
+    color: #fff;
 }
 
 .period-toggle {
@@ -665,5 +839,49 @@ td {
     margin: 0 0 8px;
     font-size: 1rem;
     color: #fff;
+}
+
+.waste-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    /* line up children on their bottom edge */
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.waste-field {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.9rem;
+    color: #fff;
+    flex: 1 0 auto;
+    min-width: 8rem;
+}
+
+.waste-field input {
+    margin-top: 4px;
+    padding: 0.3rem 0.5rem;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: transparent;
+    color: #fff;
+    width: 100%;
+}
+
+.waste-add-btn {
+    align-self: flex-end;
+    /* sit on the same bottom line as inputs */
+    padding: 0.5rem 1rem;
+    background: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    flex: 0 0 auto;
+}
+
+.waste-add-btn:hover {
+    background: #218838;
 }
 </style>
