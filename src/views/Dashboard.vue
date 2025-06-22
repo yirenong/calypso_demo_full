@@ -19,8 +19,8 @@
       </div>
       <!-- Top Cards -->
       <div class="top-cards">
-        <DashboardCard color="#625a9b" title="Power Usage Today" :value="powerUsageToday"
-          description="Power Today" link="/">
+        <DashboardCard color="#625a9b" title="Power Usage Today" :value="powerUsageToday" description="Power Today"
+          link="/">
           <template #icon><i class="fas fa-bolt"></i></template>
         </DashboardCard>
         <DashboardCard color="#42abb7" title="Power Usage This Month" :value="totalPowerUsageThisMonth"
@@ -31,18 +31,38 @@
           description="Highest Power Consumption" link="/">
           <template #icon><i class="fas fa-plug"></i></template>
         </DashboardCard>
-        <DashboardCard color="#245d75" title="Power Efficiency" value="Normal"
-          description="Valid Until 30 June 2025" link="/">
+        <DashboardCard color="#245d75" title="Power Efficiency" value="Normal" description="Valid Until 30 June 2025"
+          link="/">
           <template #icon><i class="fas fa-leaf"></i></template>
-          
+
         </DashboardCard>
       </div>
       <!-- Middle Row -->
       <div class="middle-row">
-        <div class="card floorplan"><FloorplanComponent :selectedImage="selectedImage" /></div>
+        <div class="card real-time-metrics">
+          <h3>Real-Time Metrics</h3>
+          <table class="metrics-table">
+            <thead>
+              <tr>
+                <th>Metric</th>
+                <th>Value</th>
+                <th>Unit</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="metric in realTimeMetrics" :key="metric.name">
+                <td>{{ metric.name }}</td>
+                <td>{{ metric.value }}</td>
+                <td>{{ metric.unit }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
         <div class="card power-usage-hourly">
           <h3>Power Usage Hourly for the Day</h3>
-          <div class="chart-wrapper"><PowerHourlyChart :data="hourlyChartData" /></div>
+          <div class="chart-wrapper">
+            <PowerHourlyChart :data="hourlyChartData" />
+          </div>
           <button class="add-button" @click="navigateToPage('/energy-management/historical-data')">+</button>
         </div>
       </div>
@@ -50,7 +70,9 @@
       <div class="bottom-row">
         <div class="card power-usage-daily">
           <h3>Power Usage Daily, over 7 days</h3>
-          <div class="chart-wrapper"><PowerDailyChart :data="dailyChartData" /></div>
+          <div class="chart-wrapper">
+            <PowerDailyChart :data="dailyChartData" />
+          </div>
           <button class="add-button" @click="navigateToPage('/energy-management/historical-data')">+</button>
         </div>
       </div>
@@ -85,7 +107,8 @@
       <draggable v-model:list="cards" item-key="id" tag="div" class="dashboard-grid" :animation="200"
         handle=".card-handle" @start="isDragging = true" @end="isDragging = false">
         <template #item="{ element: card, index }">
-          <div class="card-wrapper" :class="{ 'value-card': isMetric(card.type), dragging: isDragging }" :style="card.props.style">
+          <div class="card-wrapper" :class="{ 'value-card': isMetric(card.type), dragging: isDragging }"
+            :style="card.props.style">
             <div class="card-top-actions">
               <button class="edit-btn" @click="editCard(index)"><i class="fas fa-edit"></i></button>
               <button class="delete-btn" @click="removeCard(index)"><i class="fas fa-times"></i></button>
@@ -173,13 +196,13 @@ const labelMap = {
   AvoidableCostReport: 'Avoidable Cost Report & Graph'
 };
 const cardGroups = [
-  { label: 'Chiller Plant Energy', types: ['SystemRTGraph','SystemRTMetric','SystemKWGraph','SystemKWMetric','SystemKWRTGraph','SystemKWRTMetric','HeatBalanceGraph','HeatBalanceMetric']},
-  { label: 'Campus Electrical Energy', types: ['ElecIncoming','ElecUsage','TenantUsage','Solar','EVCharging','CampusEUI','CampusTSE','EnergySourceDistPie','EnergySourceDistBar','CampusEUIBar','ElectricalIntakeBar','EnergyUsageDistPie','EnergyUsageDistBar','AirsideEnergyDistBar']},
-  { label: 'Campus Water Usage', types: ['PubWaterIncoming','NEWaterIncoming','CampusWaterUsage','CampusWUI','WaterSourceDistPie','WaterSourceDistBar','CampusWUITrendBar','WaterIntakeBar','WaterConsumptionTrendBar','WaterUsageDistPie','WaterUsageDistBar']},
-  { label: 'Sustainability Indicators', types: ['CarbonFootprint']},
-  { label: 'Statistical Analysis', types: ['AlertsCCTV','DiagnosticReport','AvoidableCostReport']},
-  { label: 'Monthly Reports', types: ['MonthlySales','MonthlyTrend']},
-  { label: 'KPIs', types: ['CurrentKPI']}
+  { label: 'Chiller Plant Energy', types: ['SystemRTGraph', 'SystemRTMetric', 'SystemKWGraph', 'SystemKWMetric', 'SystemKWRTGraph', 'SystemKWRTMetric', 'HeatBalanceGraph', 'HeatBalanceMetric'] },
+  { label: 'Campus Electrical Energy', types: ['ElecIncoming', 'ElecUsage', 'TenantUsage', 'Solar', 'EVCharging', 'CampusEUI', 'CampusTSE', 'EnergySourceDistPie', 'EnergySourceDistBar', 'CampusEUIBar', 'ElectricalIntakeBar', 'EnergyUsageDistPie', 'EnergyUsageDistBar', 'AirsideEnergyDistBar'] },
+  { label: 'Campus Water Usage', types: ['PubWaterIncoming', 'NEWaterIncoming', 'CampusWaterUsage', 'CampusWUI', 'WaterSourceDistPie', 'WaterSourceDistBar', 'CampusWUITrendBar', 'WaterIntakeBar', 'WaterConsumptionTrendBar', 'WaterUsageDistPie', 'WaterUsageDistBar'] },
+  { label: 'Sustainability Indicators', types: ['CarbonFootprint'] },
+  { label: 'Statistical Analysis', types: ['AlertsCCTV', 'DiagnosticReport', 'AvoidableCostReport'] },
+  { label: 'Monthly Reports', types: ['MonthlySales', 'MonthlyTrend'] },
+  { label: 'KPIs', types: ['CurrentKPI'] }
 ];
 const componentMap = {
   MonthlySales: BarChartCard,
@@ -241,6 +264,18 @@ export default {
   data() {
     return {
       selectedTab: 'overview',
+      realTimeMetrics: [
+        { name: 'Temperature', value: 24.5, unit: '°C' },
+        { name: 'Humidity', value: 55, unit: '%' },
+        { name: 'Air Pressure', value: 101.3, unit: 'kPa' },
+        { name: 'CO₂ Level', value: 415, unit: 'ppm' },
+        { name: 'PM2.5', value: 12, unit: 'µg/m³' },
+        { name: 'PM10', value: 20, unit: 'µg/m³' },
+        { name: 'VOC', value: 0.45, unit: 'ppm' },
+        { name: 'Noise Level', value: 35, unit: 'dB' },
+        { name: 'Light Level', value: 300, unit: 'lux' },
+        { name: 'Battery Level', value: 80, unit: '%' }
+      ],
       hourlyChartData: [
         { label: '00:00', value: 1.2 }, { label: '01:00', value: 1.0 }, { label: '02:00', value: 0.8 },
         { label: '03:00', value: 0.6 }, { label: '04:00', value: 0.5 }, { label: '05:00', value: 0.7 },
@@ -284,15 +319,15 @@ export default {
     },
     isMetric(type) {
       return [
-        'CurrentKPI','SystemRTMetric','SystemKWMetric','SystemKWRTMetric','HeatBalanceMetric',
-        'ElecIncoming','ElecUsage','TenantUsage','Solar','EVCharging','CampusEUI','CampusTSE'
+        'CurrentKPI', 'SystemRTMetric', 'SystemKWMetric', 'SystemKWRTMetric', 'HeatBalanceMetric',
+        'ElecIncoming', 'ElecUsage', 'TenantUsage', 'Solar', 'EVCharging', 'CampusEUI', 'CampusTSE'
       ].includes(type);
     },
     addCard() {
       const type = this.newCardType;
       const id = generateId();
-      if (['CarbonFootprint','AlertsCCTV','DiagnosticReport','AvoidableCostReport'].includes(type)) {
-        const cols = ['Item','Value'];
+      if (['CarbonFootprint', 'AlertsCCTV', 'DiagnosticReport', 'AvoidableCostReport'].includes(type)) {
+        const cols = ['Item', 'Value'];
         let rows = [];
         if (type === 'CarbonFootprint') rows = [{ Item: 'Scope 1 CO₂', Value: '1,200 t' }, { Item: 'Scope 2 CO₂', Value: '3,400 t' }];
         if (type === 'AlertsCCTV') rows = [{ Item: 'Motion Alerts', Value: '12' }, { Item: 'Object Alerts', Value: '5' }];
@@ -300,21 +335,21 @@ export default {
         if (type === 'AvoidableCostReport') rows = [{ Item: 'Energy Wastage', Value: '$1,500' }, { Item: 'Maintenance', Value: '$700' }];
         this.cards.push({ id, type, props: { title: labelMap[type], columns: cols, rows, style: { gridColumn: 'span 2' } } });
       } else if (/(Graph|Chart|Bar|Pie)$/.test(type)) {
-       this.cards.push({
-         id,
-         type,
-         props: {
-           title: labelMap[type],
-           chartData: {
-             labels: labels7,
-             datasets: [{ label: labelMap[type], data: randomArray(7) }]
-           },
-           options: chartOptions,
-           style: { gridColumn: 'span 2' }
-         }
-       })
-     } else {
-        this.cards.push({ id, type, props: { title: labelMap[type], value: randomArray(1,10000)[0], style: {} } });
+        this.cards.push({
+          id,
+          type,
+          props: {
+            title: labelMap[type],
+            chartData: {
+              labels: labels7,
+              datasets: [{ label: labelMap[type], data: randomArray(7) }]
+            },
+            options: chartOptions,
+            style: { gridColumn: 'span 2' }
+          }
+        })
+      } else {
+        this.cards.push({ id, type, props: { title: labelMap[type], value: randomArray(1, 10000)[0], style: {} } });
       }
     },
     removeCard(index) {
@@ -351,6 +386,7 @@ export default {
   background-color: #1e2a47 !important;
   color: #ffffff !important;
 }
+
 .dashboard-container .dashboard-grid .card-wrapper * {
   color: inherit !important;
 }
@@ -358,8 +394,10 @@ export default {
 
 .dashboard-container {
   background-color: #0a1f44;
-  min-height: 100vh;    /* so it always fills the viewport height */
-  padding: 20px;        /* optional, to restore your original padding */
+  min-height: 100vh;
+  /* so it always fills the viewport height */
+  padding: 20px;
+  /* optional, to restore your original padding */
 }
 
 /* Customizable Tab Header */
@@ -369,24 +407,28 @@ export default {
   align-items: center;
   margin-bottom: 20px;
 }
+
 .page-title {
   color: #ffffff;
   margin: 0;
   font-size: 24px;
 }
+
 .page-header .breadcrumb {
   display: flex;
   align-items: center;
   color: #ffffff;
   font-size: 14px;
 }
+
 .page-header .breadcrumb span {
   margin: 0 4px;
 }
 
 .header-row {
   display: flex;
-  justify-content: space-between;  /* title on left, breadcrumb on right */
+  justify-content: space-between;
+  /* title on left, breadcrumb on right */
   align-items: center;
   margin-bottom: 20px;
 }
@@ -394,11 +436,13 @@ export default {
 .header-row .breadcrumb {
   display: flex;
   align-items: center;
-  gap: 8px;   /* space between each span and separator */
+  gap: 8px;
+  /* space between each span and separator */
 }
 
 .header-row .breadcrumb span {
-  margin: 0;  /* reset any default margins */
+  margin: 0;
+  /* reset any default margins */
 }
 
 
@@ -412,8 +456,10 @@ export default {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  margin-bottom: 0;               /* remove the extra bottom margin */
-  color: #ffffff;                 /* make all text white */
+  margin-bottom: 0;
+  /* remove the extra bottom margin */
+  color: #ffffff;
+  /* make all text white */
 }
 
 /* Individual breadcrumb pieces in white */
@@ -428,6 +474,7 @@ export default {
   gap: 1rem;
   margin-bottom: 1rem;
 }
+
 .tab-nav button {
   padding: 0.5rem 1rem;
   border: none;
@@ -435,6 +482,7 @@ export default {
   cursor: pointer;
   border-radius: 4px;
 }
+
 .tab-nav button.active {
   background: #1e2a47;
   color: #fff;
@@ -446,20 +494,24 @@ export default {
   flex-direction: column;
   gap: 20px;
 }
+
 .top-cards {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
 }
+
 .middle-row {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 20px;
 }
+
 .bottom-row {
   display: flex;
   gap: 20px;
 }
+
 .card {
   border-radius: 8px;
   padding: 20px;
@@ -470,18 +522,22 @@ export default {
   color: #4a4a4a;
   position: relative;
 }
+
 .card h3 {
   font-size: 16px;
   font-weight: bold;
   margin-bottom: 10px;
 }
+
 .chart-wrapper {
   width: 100%;
 }
+
 .floorplan {
   display: flex;
   justify-content: center;
 }
+
 .add-button {
   position: absolute;
   top: 10px;
@@ -495,6 +551,7 @@ export default {
   font-size: 18px;
   cursor: pointer;
 }
+
 .add-button:hover {
   background-color: #e11d48;
 }
@@ -506,12 +563,14 @@ export default {
   gap: 16px;
   margin-bottom: 24px;
 }
+
 .control-label {
   display: block;
   margin-bottom: 4px;
   color: white;
   font-size: 14px;
 }
+
 .control-select {
   padding: 8px 12px;
   border: 1px solid #ccc;
@@ -519,6 +578,7 @@ export default {
   background-color: #fff;
   color: #333;
 }
+
 .control-button {
   display: flex;
   align-items: center;
@@ -532,15 +592,18 @@ export default {
   font-weight: 600;
   font-size: 0.9rem;
 }
+
 .control-button:hover {
   background-color: #125ea3;
 }
+
 .dashboard-grid {
   display: grid;
   grid-auto-rows: auto;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 20px;
 }
+
 .card-wrapper {
   background-color: #fff;
   border-radius: 8px;
@@ -549,13 +612,16 @@ export default {
   position: relative;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+
 .card-wrapper.value-card {
   max-width: 200px;
 }
+
 .card-wrapper:hover:not(.dragging) {
   transform: translateY(-4px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
+
 .card-handle {
   position: absolute;
   top: 8px;
@@ -564,9 +630,11 @@ export default {
   cursor: grab;
   color: #888;
 }
+
 .card-handle:active {
   cursor: grabbing;
 }
+
 .card-top-actions {
   position: absolute;
   top: 8px;
@@ -574,6 +642,7 @@ export default {
   display: flex;
   gap: 8px;
 }
+
 .card-top-actions button {
   background: none;
   border: none;
@@ -581,28 +650,55 @@ export default {
   cursor: pointer;
   color: #555;
 }
+
 .card-top-actions button:hover {
   color: #000;
 }
+
 .card-wrapper.dragging {
   transition: none !important;
 }
+
 .card-wrapper.dragging:hover {
   transform: none !important;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.1) !important;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1) !important;
 }
+
+.metrics-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+}
+
+.metrics-table th,
+.metrics-table td {
+  padding: 6px;
+  border: 1px solid #ccc;
+  text-align: left;
+}
+
+.metrics-table th {
+  background: #245d75;
+  color: #fff;
+}
+
 
 /* Responsive */
 @media (max-width: 768px) {
   .dashboard-view {
     gap: 10px;
   }
-  .top-cards, .middle-row, .bottom-row {
+
+  .top-cards,
+  .middle-row,
+  .bottom-row {
     display: block;
   }
+
   .controls {
     flex-direction: column;
   }
+
   .dashboard-grid {
     grid-template-columns: 1fr !important;
   }
