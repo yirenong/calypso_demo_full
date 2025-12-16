@@ -15,6 +15,7 @@ import { ref, onMounted, watch } from 'vue'
 import { Chart, registerables } from 'chart.js'
 import WidgetCard from './WidgetCard.vue'
 
+
 Chart.register(...registerables)
 const props = defineProps({
     title: { type: String, required: true },
