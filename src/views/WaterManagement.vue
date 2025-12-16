@@ -641,7 +641,7 @@ import MixedChartCard from '../components/MixedChartCard.vue'
 /* ------------ View Tab ------------ */
 const viewTab = ref('Dashboard')
 
-const FAULTS_URL = 'http://localhost:8084/faults/water/active'
+const FAULTS_URL = 'https://water-meter-demo.onrender.com/faults/water/active'
 
 const faults = ref([])
 const faultsLoading = ref(false)
@@ -789,10 +789,10 @@ function setGran(g) {
 
 /* Endpoints for Month/Year series at Block+Level */
 function monthUrl(b, l, startMM, endMM) {
-    return `http://127.0.0.1:8080/blocks/${encodeURIComponent(b)}/levels/${encodeURIComponent(l)}/series-monthly?start=${encodeURIComponent(startMM)}&end=${encodeURIComponent(endMM)}`
+    return `https://water-meter-demo.onrender.com/blocks/${encodeURIComponent(b)}/levels/${encodeURIComponent(l)}/series-monthly?start=${encodeURIComponent(startMM)}&end=${encodeURIComponent(endMM)}`
 }
 function yearUrl(b, l, startY, endYExclusive) {
-    return `http://127.0.0.1:8080/blocks/${encodeURIComponent(b)}/levels/${encodeURIComponent(l)}/series-yearly?start=${encodeURIComponent(startY)}&end=${encodeURIComponent(endYExclusive)}`
+    return `https://water-meter-demo.onrender.com/blocks/${encodeURIComponent(b)}/levels/${encodeURIComponent(l)}/series-yearly?start=${encodeURIComponent(startY)}&end=${encodeURIComponent(endYExclusive)}`
 }
 
 function addDaysYmd(ymd, delta) {
@@ -930,7 +930,7 @@ async function loadDayViaEndpointAllPairs(selectedYmd) {
     const pairs = pairsForScope('Overall', 'Overall') // all block-level pairs
     const results = []
     for (const { block, level } of pairs) {
-        const url = `http://127.0.0.1:8080/blocks/${encodeURIComponent(block)}/levels/${encodeURIComponent(level)}/series?fill_missing=false`
+        const url = `https://water-meter-demo.onrender.com/blocks/${encodeURIComponent(block)}/levels/${encodeURIComponent(level)}/series?fill_missing=false`
         try {
             const r = await fetch(url, { cache: 'no-cache' })
             if (!r.ok) throw new Error('HTTP ' + r.status)
@@ -988,7 +988,7 @@ async function loadDayTotalsViaEndpointScope(selectedYmd) {
     const perPair = []  // { block, level, daily }
 
     for (const { block, level } of pairs) {
-        const url = `http://127.0.0.1:8080/blocks/${encodeURIComponent(block)}/levels/${encodeURIComponent(level)}/series?fill_missing=false`
+        const url = `https://water-meter-demo.onrender.com/blocks/${encodeURIComponent(block)}/levels/${encodeURIComponent(level)}/series?fill_missing=false`
 
         try {
             const r = await fetch(url, { cache: 'no-cache' })
@@ -1170,7 +1170,7 @@ async function loadSpecialNeWaterSeries() {
         const fetchEndYmdEx = interestEndYmdEx
 
         const url =
-            'http://localhost:8086/api/range?deviceName=' +
+            'https://water-meter-demo.onrender.com/api/range?deviceName=' +
             encodeURIComponent(deviceName) +
             '&start=' + encodeURIComponent(fetchStartYmd) +
             '&end=' + encodeURIComponent(fetchEndYmdEx)
@@ -1362,7 +1362,7 @@ async function fetchSpecialNeDailyMap(startYmd, endYmdEx) {
     for (const name of specialNames) {
         try {
             const url =
-                'http://localhost:8086/api/range?deviceName=' +
+                'https://water-meter-demo.onrender.com/api/range?deviceName=' +
                 encodeURIComponent(name) +
                 '&start=' + encodeURIComponent(fetchStart) +
                 '&end=' + encodeURIComponent(endYmdEx)
@@ -1676,10 +1676,10 @@ async function loadFaults() {
     }
 
     /* Endpoints */
-    const BLOCKS_URL = 'http://localhost:8080/blocks'
+    const BLOCKS_URL = 'https://water-meter-demo.onrender.com/blocks'
     const METERS_URL = '/water_meters_combined_full_sorted.json'
-    const SUMMARY_URL = 'http://localhost:8080/summary/block'
-    const SITE_META_URL = 'http://localhost:8080/meta/site'
+    const SUMMARY_URL = 'https://water-meter-demo.onrender.com/summary/block'
+    const SITE_META_URL = 'https://water-meter-demo.onrender.com/meta/site'
 
     /* ===== Site meta (Overall + Blocks) ===== */
     const siteMetaLoading = ref(false), siteMetaError = ref(null)
@@ -2102,7 +2102,7 @@ async function loadFaults() {
 
         for (const deviceName of Object.values(SPECIAL_TABS_MAP)) {
             const url =
-                'http://localhost:8086/api/range?deviceName=' +
+                'https://water-meter-demo.onrender.com/api/range?deviceName=' +
                 encodeURIComponent(deviceName) +
                 '&start=' + encodeURIComponent(startYmd) +
                 '&end=' + encodeURIComponent(endYmdEx)
@@ -2206,7 +2206,7 @@ async function loadFaults() {
         blocksBarLoading.value = true
         blocksBarError.value = null
         try {
-            const url = `http://localhost:8080/summary/block?date=${encodeURIComponent(lineBarDate.value)}`
+            const url = `https://water-meter-demo.onrender.com/summary/block?date=${encodeURIComponent(lineBarDate.value)}`
             const r = await fetch(url, { cache: 'no-cache' })
             if (!r.ok) throw new Error('HTTP ' + r.status)
             const body = await r.json()
@@ -2287,7 +2287,7 @@ async function loadFaults() {
 
         for (const deviceName of Object.values(SPECIAL_TABS_MAP)) {
             const url =
-                'http://localhost:8086/api/range?deviceName=' +
+                'https://water-meter-demo.onrender.com/api/range?deviceName=' +
                 encodeURIComponent(deviceName) +
                 '&start=' + encodeURIComponent(startYmd) +
                 '&end=' + encodeURIComponent(endYmdEx)
@@ -2441,7 +2441,7 @@ async function loadFaults() {
         if (!tag || cumulativeMap.value[tag] || cumulativeLoading.value.has(tag)) return
         cumulativeLoading.value.add(tag)
         try {
-            const url = `http://localhost:8080/meters/${encodeURIComponent(tag)}/latest-cumulative`
+            const url = `https://water-meter-demo.onrender.com/meters/${encodeURIComponent(tag)}/latest-cumulative`
             const r = await fetch(url, { cache: 'no-cache' })
             let body = null; try { body = await r.json() } catch { }
             if (r.ok && body && typeof body.last_value === 'number') {
@@ -2542,7 +2542,7 @@ async function loadFaults() {
     // 1) Replace fetchSeries with this version (maps data[].consumption -> value)
     async function fetchSeries(tag, startISO, endISO) {
         try {
-            const url = `http://localhost:8080/meters/${encodeURIComponent(tag)}/series?start=${encodeURIComponent(startISO)}&end=${encodeURIComponent(endISO)}&fill_missing=false`
+            const url = `https://water-meter-demo.onrender.com/meters/${encodeURIComponent(tag)}/series?start=${encodeURIComponent(startISO)}&end=${encodeURIComponent(endISO)}&fill_missing=false`
             const r = await fetch(url, { cache: 'no-cache' })
             if (!r.ok) throw new Error('HTTP ' + r.status)
             const data = await r.json()
@@ -3178,7 +3178,7 @@ async function loadFaults() {
     }
 
     /* ================== Thresholds (CRUD) ================== */
-    const THRESHOLDS_URL = 'http://localhost:8084/thresholds/water'
+    const THRESHOLDS_URL = 'https://water-meter-demo.onrender.com/thresholds/water'
 
     const thresholdsLoading = ref(false)
     const thresholdsError = ref(null)

@@ -346,8 +346,8 @@ function clampDayISO(iso) {
 }
 
 // endpoints (reuse your existing base if different)
-const UD_HIERARCHY_URL = 'http://127.0.0.1:8081/meta/hierarchy'
-const UD_TREND_BASE_URL = 'http://127.0.0.1:8081/power/block-level/trend'
+const UD_HIERARCHY_URL = 'https://energy-meter-demo.onrender.com/meta/hierarchy'
+const UD_TREND_BASE_URL = 'https://energy-meter-demo.onrender.com/power/block-level/trend'
 const UD_EUI_DENOMINATOR = 192820
 const UD_EUI_DAILY_BASELINE = 40000  // kWh/day assumption for remaining days
 
@@ -912,9 +912,9 @@ function weekNumber(d) {
 /* =========================================================
    WATER — blocks, meters, cumulative mix, daily summary, trend
 ========================================================= */
-const BLOCKS_URL = 'http://localhost:8080/blocks'
+const BLOCKS_URL = 'https://water-meter-demo.onrender.com/blocks'
 const METERS_URL = '/water_meters_combined_full_sorted.json'
-const SUMMARY_URL = 'http://localhost:8080/summary/block' // ?date=YYYY-MM-DD
+const SUMMARY_URL = 'https://water-meter-demo.onrender.com/summary/block' // ?date=YYYY-MM-DD
 
 // ------- WDI -------
 const wdiLoading = ref(false);
@@ -1146,7 +1146,7 @@ function ymd(dateLike) {
 }
 async function fetchSeries(tag, startISO, endISO) {
     try {
-        const url = `http://localhost:8080/meters/${encodeURIComponent(tag)}/series?start=${encodeURIComponent(startISO)}&end=${encodeURIComponent(endISO)}&fill_missing=false`
+        const url = `https://water-meter-demo.onrender.com/meters/${encodeURIComponent(tag)}/series?start=${encodeURIComponent(startISO)}&end=${encodeURIComponent(endISO)}&fill_missing=false`
         const r = await fetch(url, { cache: 'no-cache' })
         if (!r.ok) throw new Error('HTTP ' + r.status)
         const data = await r.json()
@@ -1313,9 +1313,9 @@ const chartAChartData = computed(() => ({
 }))
 
 /* Site meta + WUI */
-const META_URL = 'http://localhost:8080/meta/site'
-const PUT_POP_URL = 'http://localhost:8080/meta/site/population'
-const PUT_AREA_URL = 'http://localhost:8080/meta/site/area'
+const META_URL = 'https://water-meter-demo.onrender.com/meta/site'
+const PUT_POP_URL = 'https://water-meter-demo.onrender.com/meta/site/population'
+const PUT_AREA_URL = 'https://water-meter-demo.onrender.com/meta/site/area'
 const site = reactive({ population: 0, area: 0, units: { area: 'km2' }, populationDraft: 0, areaDraft: 0, saving: false, error: null })
 async function loadSiteMeta() {
     try {
@@ -1358,16 +1358,16 @@ const kpiWui = computed(() => {
 /* =========================================================
    ENERGY — hierarchy, windows, trend + Airside KPI
 ========================================================= */
-const HIERARCHY_URL = 'http://127.0.0.1:8081/meta/hierarchy'
-const HOUR_URL = 'http://127.0.0.1:8081/power/block-level/hour'
-const DAY_URL = 'http://127.0.0.1:8081/power/block-level/day'
-const DEV_HOUR_URL = 'http://127.0.0.1:8081/power/device/hour'
-const DEV_DAY_URL = 'http://127.0.0.1:8081/power/device/day'
-const METER_HOUR_URL = 'http://127.0.0.1:8081/power/meter/hour?limit=10000&offset=0'
-const TREND_BASE_URL = 'http://127.0.0.1:8081/power/block-level/trend'
+const HIERARCHY_URL = 'https://energy-meter-demo.onrender.com/meta/hierarchy'
+const HOUR_URL = 'https://energy-meter-demo.onrender.com/power/block-level/hour'
+const DAY_URL = 'https://energy-meter-demo.onrender.com/power/block-level/day'
+const DEV_HOUR_URL = 'https://energy-meter-demo.onrender.com/power/device/hour'
+const DEV_DAY_URL = 'https://energy-meter-demo.onrender.com/power/device/day'
+const METER_HOUR_URL = 'https://energy-meter-demo.onrender.com/power/meter/hour?limit=10000&offset=0'
+const TREND_BASE_URL = 'https://energy-meter-demo.onrender.com/power/block-level/trend'
 
 // NEW: aggregated by block (A, BD, C, ...)
-const BLOCKS_TREND_URL = 'http://127.0.0.1:8081/power/blocks/trend'
+const BLOCKS_TREND_URL = 'https://energy-meter-demo.onrender.com/power/blocks/trend'
 
 
 const hierLoading = ref(false), hierError = ref(null)
@@ -1501,7 +1501,7 @@ const selectedHour = computed(() => aggregateFromRows(hourPayload.value.rows))
 
 /* ===== Airside efficiency (robust) ===== */
 /* ===== Airside efficiency (from /day) ===== */
-const AIR_BASE = 'http://127.0.0.1:8081/efficiency';
+const AIR_BASE = 'https://energy-meter-demo.onrender.com/efficiency';
 const AIR_HOUR_URL = `${AIR_BASE}/day`;
 
 
@@ -1624,7 +1624,7 @@ const chillerCards = computed(() => {
 })
 
 /* TSE parts: point + hour API combined */
-const EFF_HOUR_URL = 'http://127.0.0.1:8081/efficiency/hour'
+const EFF_HOUR_URL = 'https://energy-meter-demo.onrender.com/efficiency/hour'
 const tseKwPerRt = ref(0), tseKwLoading = ref(false), tseKwError = ref(null)
 async function loadTseKwPerRt() {
     tseKwLoading.value = true; tseKwError.value = null

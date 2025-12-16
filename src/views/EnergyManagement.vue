@@ -578,27 +578,27 @@ import * as XLSX from 'xlsx' // npm i xlsx
 import { getDate } from 'date-fns'
 
 /** Endpoints */
-const HIERARCHY_URL = 'http://127.0.0.1:8081/meta/hierarchy'
-const HOUR_URL = 'http://127.0.0.1:8081/power/block-level/hour'
-const DAY_URL = 'http://127.0.0.1:8081/power/block-level/day'
-const DEV_HOUR_URL = 'http://127.0.0.1:8081/power/device/hour'
-const DEV_DAY_URL = 'http://127.0.0.1:8081/power/device/day'
-const METER_HOUR_URL = 'http://127.0.0.1:8081/power/meter/hour?limit=10000&offset=0'
-const TREND_BASE_URL = 'http://127.0.0.1:8081/power/block-level/trend'
+const HIERARCHY_URL = 'https://energy-meter-demo.onrender.com/meta/hierarchy'
+const HOUR_URL = 'https://energy-meter-demo.onrender.com/power/block-level/hour'
+const DAY_URL = 'https://energy-meter-demo.onrender.com/power/block-level/day'
+const DEV_HOUR_URL = 'https://energy-meter-demo.onrender.com/power/device/hour'
+const DEV_DAY_URL = 'https://energy-meter-demo.onrender.com/power/device/day'
+const METER_HOUR_URL = 'https://energy-meter-demo.onrender.com/power/meter/hour?limit=10000&offset=0'
+const TREND_BASE_URL = 'https://energy-meter-demo.onrender.com/power/block-level/trend'
 
 // New blocks-level trend endpoint (no levels)
-const BLOCKS_TREND_URL = 'http://127.0.0.1:8081/power/blocks/trend'
+const BLOCKS_TREND_URL = 'https://energy-meter-demo.onrender.com/power/blocks/trend'
 
 
 /* Airside endpoints */
-const AIR_BASE = 'http://127.0.0.1:8081/efficiency'
+const AIR_BASE = 'https://energy-meter-demo.onrender.com/efficiency'
 const AIR_HOUR_URL = `${AIR_BASE}/hour`
 const AIR_DAY_URL = `${AIR_BASE}/day`
 const AIR_BIZ_URL = `${AIR_BASE}/day/business`
 const AIR_OFFPEAK_URL = `${AIR_BASE}/day/offpeak`
 
 /* TOP DEVICES —— endpoint */
-const TOP_BASE_URL = 'http://127.0.0.1:8081/power/top'
+const TOP_BASE_URL = 'https://energy-meter-demo.onrender.com/power/top'
 
 // ✅ ADD: per-block fallback (Top 5 each)
 const TOP_FALLBACK_BY_BLOCK = {
@@ -698,13 +698,13 @@ const DEVICE_LIST_FALLBACK_ROWS = Object.values(TOP_FALLBACK_BY_BLOCK)
     }))
 
 /* ========================= FAULTS ========================= */
-const FAULTS_URL = 'http://localhost:8084/faults/energy/active'
+const FAULTS_URL = 'https://energy-meter-demo.onrender.com/faults/energy/active'
 
 /* ---- NEW: EUI + Waterside + Month/Annual totals ---- */
 const EUI_DENOMINATOR = 192820
 
 // Waterside endpoints (mirror Airside pattern; adjust if your API differs)
-const WATER_BASE = 'http://127.0.0.1:8081/efficiency/waterside'
+const WATER_BASE = 'https://energy-meter-demo.onrender.com/efficiency/waterside'
 const WATER_HOUR_URL = `${WATER_BASE}/hour`
 const WATER_DAY_URL = `${WATER_BASE}/day`
 
@@ -716,7 +716,7 @@ const waterNow = ref({ ts: null, kw_per_rt: null })
 /* =========================================================
    CHILLER — status/efficiency cards + TSE (kW/RT) combo
 ========================================================= */
-const CHILLER_POINTS_URL = 'http://localhost:8082/points/latest?limit=500&offset=0'
+const CHILLER_POINTS_URL = 'https://energy-meter-demo.onrender.com/points/latest?limit=500&offset=0'
 const chillerLoading = ref(false), chillerError = ref(null), chillerPoints = ref([])
 
 /* Granularity & pickers */
@@ -732,8 +732,8 @@ const trendMonth = ref(ymdFrom(fixedToday()).slice(0, 7));
 const trendYear = ref(fixedToday().getFullYear());
 
 // ---- Month/Year compare APIs ----
-const POWER_MONTH_URL = 'http://127.0.0.1:8081/power/block-level/month'
-const POWER_YEAR_URL = 'http://127.0.0.1:8081/power/block-level/year'
+const POWER_MONTH_URL = 'https://energy-meter-demo.onrender.com/power/block-level/month'
+const POWER_YEAR_URL = 'https://energy-meter-demo.onrender.com/power/block-level/year'
 
 // Download modal: date mode for hourly trend
 const hourlyDateMode = ref('single') // 'single' | 'custom'
@@ -885,9 +885,9 @@ function periodWindowsForDay(period, anchorDate) {
     return [{ start: d000000, end: d235959 }];
 }
 // --- EV Charging Room (Energy Node 1) ---
-// API: http://localhost:8086/api/range?deviceName=Energy%20Node%201&start=YYYY-MM-DD&end=YYYY-MM-DD
+// API: https://energy-meter-demo.onrender.com/api/range?deviceName=Energy%20Node%201&start=YYYY-MM-DD&end=YYYY-MM-DD
 
-const EV_API_BASE = 'http://localhost:8086/api/range'
+const EV_API_BASE = 'https://energy-meter-demo.onrender.com/api/range'
 
 const evDayTotalPower = ref(0)
 const evMonthTotalPower = ref(0)
@@ -2853,7 +2853,7 @@ async function downloadAllXLSX(opts = { devices: true, hourly: true, sevenDays: 
                 pad(d.getSeconds())
 
             const dailyUrl =
-                'http://127.0.0.1:8081/power/blocks/trend?start=' + encodeURIComponent(toISOWithSecs(startDay)) +
+                'https://energy-meter-demo.onrender.com/power/blocks/trend?start=' + encodeURIComponent(toISOWithSecs(startDay)) +
                 '&end=' + encodeURIComponent(toISOWithSecs(endDay))
 
             const overallDailyTotals = new Map()
@@ -3134,7 +3134,7 @@ function scheduleHourlyReload() {
 }
 
 /* ================== Energy Thresholds (CRUD) ================== */
-const E_THRESHOLDS_URL = 'http://localhost:8084/thresholds/energy'
+const E_THRESHOLDS_URL = 'https://energy-meter-demo.onrender.com/thresholds/energy'
 
 const eThresholdsLoading = ref(false)
 const eThresholdsError = ref(null)

@@ -229,7 +229,7 @@ const DS_COLORS = {
 }
 
 // === 8086 range-based main meters (PUB + NEWater) ==========================
-const RANGE_BASE_URL = 'http://localhost:8086/api/range'
+const RANGE_BASE_URL = 'https://water-meter-demo.onrender.com/api/range'
 // Map these to your actual devices if swapped in backend
 const RANGE_PUB_DEVICE = 'Water Meter ff02008000000058'
 const RANGE_NE_DEVICE = 'Water Meter ff02008000000061'
@@ -668,8 +668,8 @@ const compareBarDataSelection = computed(() => {
 
 /* ---------- Endpoints + meters ---------- */
 const METERS_URL = '/water_meters_combined_full_sorted.json'
-function monthUrl(b, l, startMM, endMM) { return `http://localhost:8080/blocks/${encodeURIComponent(b)}/levels/${encodeURIComponent(l)}/series-monthly?start=${encodeURIComponent(startMM)}&end=${encodeURIComponent(endMM)}` }
-function yearUrl(b, l, startY, endYExclusive) { return `http://localhost:8080/blocks/${encodeURIComponent(b)}/levels/${encodeURIComponent(l)}/series-yearly?start=${encodeURIComponent(startY)}&end=${encodeURIComponent(endYExclusive)}` }
+function monthUrl(b, l, startMM, endMM) { return `https://water-meter-demo.onrender.com/blocks/${encodeURIComponent(b)}/levels/${encodeURIComponent(l)}/series-monthly?start=${encodeURIComponent(startMM)}&end=${encodeURIComponent(endMM)}` }
+function yearUrl(b, l, startY, endYExclusive) { return `https://water-meter-demo.onrender.com/blocks/${encodeURIComponent(b)}/levels/${encodeURIComponent(l)}/series-yearly?start=${encodeURIComponent(startY)}&end=${encodeURIComponent(endYExclusive)}` }
 
 const flatRows = ref([])
 const meterTagToSource = computed(() => { const m = Object.create(null); for (const r of flatRows.value || []) if (r?.meter_tag) m[r.meter_tag] = r.source || 'PUB'; return m })
@@ -703,7 +703,7 @@ async function loadMeters() {
 /* ---------- Series helpers ---------- */
 async function fetchSeries(tag, startISO, endISO) {
     try {
-        const url = `http://localhost:8080/meters/${encodeURIComponent(tag)}/series?start=${encodeURIComponent(startISO)}&end=${encodeURIComponent(endISO)}&fill_missing=false`
+        const url = `https://water-meter-demo.onrender.com/meters/${encodeURIComponent(tag)}/series?start=${encodeURIComponent(startISO)}&end=${encodeURIComponent(endISO)}&fill_missing=false`
         const r = await fetch(url, { cache: 'no-cache' }); if (!r.ok) throw new Error('HTTP ' + r.status)
         const data = await r.json(); const arr = Array.isArray(data?.data) ? data.data : []
         return arr.map(row => ({ ts: row.ts, value: Number(row.consumption ?? 0) })).sort((a, b) => new Date(a.ts) - new Date(b.ts))
@@ -765,7 +765,7 @@ async function loadDayTotalsViaEndpointScope(selectedYmd) {
     const perPair = []  // { block, level, daily }
 
     for (const { block, level } of pairs) {
-        const url = `http://127.0.0.1:8080/blocks/${encodeURIComponent(block)}/levels/${encodeURIComponent(level)}/series?fill_missing=false`
+        const url = `https://water-meter-demo.onrender.com:8080/blocks/${encodeURIComponent(block)}/levels/${encodeURIComponent(level)}/series?fill_missing=false`
 
         try {
             const r = await fetch(url, { cache: 'no-cache' })
