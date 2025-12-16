@@ -1,53 +1,57 @@
-<!-- src/components/BarChartCard.vue -->
 <template>
-    <WidgetCard :title="title">
-        <template #icon><i class="fas fa-chart-bar"></i></template>
-        <canvas ref="canvas"></canvas>
-        <template #actions>
-            <slot name="actions" />
-        </template>
-    </WidgetCard>
+    <canvas ref="canvas"></canvas>
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
-import { Chart, registerables } from 'chart.js'
-import WidgetCard from './WidgetCard.vue'
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
+import {
+    Chart,
+    BarController, BarElement,
+    CategoryScale, LinearScale,
+    Tooltip, Legend, Title
+} from 'chart.js'
 
-Chart.register(...registerables)
+// Register bar chart bits
+Chart.register(BarController, BarElement, CategoryScale, LinearScale, Tooltip, Legend, Title)
 
-// props
 const props = defineProps({
-    title: { type: String, required: true },
-    chartData: { type: Object, required: true },
-    options: { type: Object, default: () => ({ responsive: true }) }
+    title: { type: String, default: '' },
+    chartData: { type: Object, required: true },   // { labels:[], datasets:[...] }
+    options: { type: Object, default: () => ({}) }
 })
 
 const canvas = ref(null)
-let chartInstance = null
+let chart
 
-onMounted(() => {
-    if (canvas.value && props.chartData.labels) {
-        chartInstance = new Chart(canvas.value, {
-            type: 'bar',
-            data: props.chartData,
-            options: props.options
-        })
-    }
-})
+function build() {
+    if (!canvas.value) return
+    if (chart) chart.destroy()
 
-// if data changes, update chart
-watch(() => props.chartData, (newData) => {
-    if (chartInstance) {
-        chartInstance.data = newData
-        chartInstance.update()
+    const data = props.chartData || { labels: [], datasets: [] }
+    const options = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            title: { display: !!props.title, text: props.title }
+        },
+        ...props.options
     }
-}, { deep: true })
+
+    chart = new Chart(canvas.value.getContext('2d'), {
+        type: 'bar',
+        data,
+        options
+    })
+}
+
+onMounted(build)
+watch(() => [props.chartData, props.options, props.title], build, { deep: true })
+onBeforeUnmount(() => { if (chart) chart.destroy() })
 </script>
 
 <style scoped>
 canvas {
-    width: 100% !important;
-    height: 100% !important;
+    width: 100%;
+    height: 100%;
 }
 </style>

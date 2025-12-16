@@ -1,48 +1,82 @@
-<!-- src/components/PieChartCard.vue -->
-<template>
-    <div class="pie-card">
-        <slot name="actions" />
-        <h3 class="card-title">{{ title }}</h3>
-        <Pie :data="chartData" :options="options" class="chart-canvas" />
-    </div>
-</template>
-
 <script setup>
-import { Pie } from 'vue-chartjs'
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
-ChartJS.register(ArcElement, Tooltip, Legend)
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
+
+// ✅ Auto-register all controllers/elements (Pie, Doughnut, etc.)
+import 'chart.js/auto'
+import { Chart } from 'chart.js'
 
 const props = defineProps({
     title: { type: String, default: '' },
-    chartData: { type: Object, required: true },
-    options: { type: Object, default: () => ({ responsive: true }) }
+    chartData: {
+        type: Object,
+        default: () => ({ labels: [], datasets: [] })
+    },
+    options: {
+        type: Object,
+        default: () => ({
+            responsive: true,
+            maintainAspectRatio: false
+        })
+    }
 })
+
+const canvasRef = ref(null)
+let chart = null
+
+function makeChart() {
+    if (!canvasRef.value) return
+    destroyChart()
+    chart = new Chart(canvasRef.value.getContext('2d'), {
+        type: 'pie',
+        data: props.chartData,
+        options: props.options
+    })
+}
+function destroyChart() {
+    if (chart) {
+        chart.destroy()
+        chart = null
+    }
+}
+
+onMounted(() => {
+    makeChart()
+})
+
+onBeforeUnmount(() => {
+    destroyChart()
+})
+
+// Deep-watch data/options to update chart
+watch(
+    () => props.chartData,
+    () => {
+        if (!chart) return makeChart()
+        chart.data = props.chartData
+        chart.update()
+    },
+    { deep: true }
+)
+
+watch(
+    () => props.options,
+    () => {
+        if (!chart) return makeChart()
+        chart.options = props.options
+        chart.update()
+    },
+    { deep: true }
+)
 </script>
 
+<template>
+    <div class="pie-chart-card" style="width:100%; height:100%">
+        <canvas ref="canvasRef"></canvas>
+    </div>
+</template>
+
 <style scoped>
-.pie-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 12px;
-    /* Cap the internal pie card so it never grows beyond a certain point */
-    max-height: 240px;
-    /* leave room for the title + padding */
-    overflow: hidden;
-}
-
-.card-title {
-    margin-bottom: 8px;
-    color: white;
-    font-weight: 600;
-    text-align: center;
-}
-
-/* Keep the pie canvas itself at roughly 180×180 max */
-.chart-canvas {
-    width: 100% !important;
-    max-width: 180px;
-    max-height: 180px;
-    height: auto !important;
+.pie-chart-card {
+    position: relative;
 }
 </style>

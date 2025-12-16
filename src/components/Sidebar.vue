@@ -1,22 +1,13 @@
 <template>
     <aside :class="['app-sidebar', { collapsed }]">
         <div class="logo-section">
-            <img src="../assets/ITE_LOGO.png" alt="Logo" class="logo" />
+            <img src="../assets/cavill_logo2.png" alt="Logo" class="logo" />
         </div>
 
         <!-- Close button on mobile only -->
         <button class="close-btn" @click="$emit('toggle-sidebar')">&times;</button>
 
         <nav>
-            <div class="menu-section">
-                <ul class="menu">
-                    <li>
-                        <div class="menu-link">
-                            <span class="link-text">ITE HQ & ITE CC</span>
-                        </div>
-                    </li>
-                </ul>
-            </div>
             <div class="menu-section">
                 <span class="menu-title">MENU</span>
                 <ul class="menu">
@@ -32,12 +23,14 @@
             <div class="menu-section">
                 <span class="menu-title">MANAGEMENT</span>
                 <ul class="menu">
-                    <li>
+                    <!-- Admin-only: hidden completely for non-admins -->
+                    <!-- <li v-if="isAdmin">
                         <router-link to="/building-management" class="menu-link">
                             <i class="fas fa-building"></i>
                             <span class="link-text">Real-Time Metrics</span>
                         </router-link>
-                    </li>
+                    </li> -->
+
                     <li>
                         <router-link to="/energy-management" class="menu-link">
                             <i class="fas fa-bolt"></i>
@@ -50,12 +43,12 @@
                             <span class="link-text">Water Management</span>
                         </router-link>
                     </li>
-                    <li>
-                        <router-link to="/unified-dashboard" class="menu-link">
-                            <i class="fas fa-tint"></i>
-                            <span class="link-text">Unified Dashboard</span>
+                    <!-- <li>
+                        <router-link to="/waste-management" class="menu-link">
+                            <i class="fas fa-recycle"></i>
+                            <span class="link-text">Waste Management</span>
                         </router-link>
-                    </li>
+                    </li> -->
                 </ul>
             </div>
         </nav>
@@ -63,7 +56,26 @@
 </template>
 
 <script setup>
-const props = defineProps({ collapsed: Boolean })
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+
+defineProps({ collapsed: Boolean })
+
+// read once, then keep in sync via events
+const role = ref(localStorage.getItem('auth_role') || 'user')
+const isAdmin = computed(() => role.value === 'admin')
+
+function syncRole() {
+    role.value = localStorage.getItem('auth_role') || 'user'
+}
+
+onMounted(() => {
+    window.addEventListener('storage', syncRole)
+    window.addEventListener('auth-changed', syncRole)
+})
+onBeforeUnmount(() => {
+    window.removeEventListener('storage', syncRole)
+    window.removeEventListener('auth-changed', syncRole)
+})
 </script>
 
 <style scoped>
@@ -141,7 +153,7 @@ const props = defineProps({ collapsed: Boolean })
 }
 
 .logo {
-    height: 48px;
+    height: 84px;
 }
 
 .menu-title {
@@ -199,9 +211,12 @@ const props = defineProps({ collapsed: Boolean })
         display: block !important;
     }
 
-    .app-sidebar.collapsed .menu-link[data-v-6dec5f19] {
+    /* Keep layout nice when expanded on mobile */
+    .app-sidebar.collapsed .menu-link {
         justify-content: left;
         padding: 16px 16px;
     }
 }
+
+/* (Removed the greyed-out .disabled style since we no longer render it) */
 </style>
