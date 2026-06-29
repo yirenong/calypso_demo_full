@@ -1,22 +1,13 @@
 <template>
     <aside :class="['app-sidebar', { collapsed }]">
         <div class="logo-section">
-            <img src="../assets/ITE_LOGO.png" alt="Logo" class="logo" />
+            <img src="../assets/cavill_logo2.png" alt="Logo" class="logo" />
         </div>
 
         <!-- Close button on mobile only -->
         <button class="close-btn" @click="$emit('toggle-sidebar')">&times;</button>
 
         <nav>
-            <div class="menu-section">
-                <ul class="menu">
-                    <li>
-                        <div class="menu-link">
-                            <span class="link-text">ITE HQ & ITE CC</span>
-                        </div>
-                    </li>
-                </ul>
-            </div>
             <div class="menu-section">
                 <span class="menu-title">MENU</span>
                 <ul class="menu">
@@ -33,12 +24,6 @@
                 <span class="menu-title">MANAGEMENT</span>
                 <ul class="menu">
                     <li>
-                        <router-link to="/building-management" class="menu-link">
-                            <i class="fas fa-building"></i>
-                            <span class="link-text">Real-Time Metrics</span>
-                        </router-link>
-                    </li>
-                    <li>
                         <router-link to="/energy-management" class="menu-link">
                             <i class="fas fa-bolt"></i>
                             <span class="link-text">Energy Management</span>
@@ -51,19 +36,55 @@
                         </router-link>
                     </li>
                     <li>
-                        <router-link to="/unified-dashboard" class="menu-link">
-                            <i class="fas fa-tint"></i>
-                            <span class="link-text">Unified Dashboard</span>
+                        <router-link to="/waste-management" class="menu-link">
+                            <i class="fas fa-recycle"></i>
+                            <span class="link-text">Waste Management</span>
+                        </router-link>
+                    </li>
+                    <li>
+                        <router-link to="/tenant-management" class="menu-link">
+                            <i class="fas fa-person"></i>
+                            <span class="link-text">Tenant Management</span>
+                        </router-link>
+                    </li>
+                    <li>
+                        <router-link to="/landscape-management" class="menu-link">
+                            <i class="fas fa-leaf"></i>
+                            <span class="link-text">Landscape Management</span>
                         </router-link>
                     </li>
                 </ul>
             </div>
         </nav>
+
+        <!-- ✅ Bottom Logo (icon persists when collapsed) -->
+        <div class="bottom-logo">
+            <img src="../assets/cavill_logo.png" alt="Cavill Logo" />
+        </div>
     </aside>
 </template>
 
 <script setup>
-const props = defineProps({ collapsed: Boolean })
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+
+defineProps({ collapsed: Boolean })
+
+const role = ref(localStorage.getItem('auth_role') || 'user')
+const isAdmin = computed(() => role.value === 'admin')
+
+function syncRole() {
+    role.value = localStorage.getItem('auth_role') || 'user'
+}
+
+onMounted(() => {
+    window.addEventListener('storage', syncRole)
+    window.addEventListener('auth-changed', syncRole)
+})
+
+onBeforeUnmount(() => {
+    window.removeEventListener('storage', syncRole)
+    window.removeEventListener('auth-changed', syncRole)
+})
 </script>
 
 <style scoped>
@@ -72,25 +93,24 @@ const props = defineProps({ collapsed: Boolean })
     top: 0;
     left: 0;
     height: 100vh;
-    width: 15%;
+    width: 240px;
     background: var(--sidebar-bg-color);
     color: var(--sidebar-text-color);
-    padding-top: 24px;
+    padding: 24px 0 0;
     box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
     transition: width 0.3s, transform 0.3s;
     overflow: hidden;
 }
 
 .app-sidebar.collapsed {
-    width: 5%;
+    width: 76px;
 }
 
-/* Remove spacing between sections when collapsed */
-.app-sidebar.collapsed .menu-section {
-    margin-bottom: 0;
+nav {
+    padding: 0 14px;
 }
 
-/* Only hide text/titles on desktop when collapsed */
+/* Hide text/titles when collapsed (desktop only) */
 @media (min-width: 769px) {
 
     .app-sidebar.collapsed .link-text,
@@ -99,9 +119,15 @@ const props = defineProps({ collapsed: Boolean })
     }
 }
 
-/* Spacing and layout */
+/* Menu layout */
 .menu-section {
     margin-bottom: 32px;
+}
+
+.menu-title {
+    display: block;
+    padding: 0 6px;
+    margin-bottom: 8px;
 }
 
 .menu li {
@@ -111,7 +137,7 @@ const props = defineProps({ collapsed: Boolean })
 .menu-link {
     display: flex;
     align-items: center;
-    padding: 12px 20px;
+    padding: 12px 14px;
     color: inherit;
     text-decoration: none;
     border-radius: 4px;
@@ -130,55 +156,71 @@ const props = defineProps({ collapsed: Boolean })
 .router-link-active {
     background: var(--sidebar-hover-color);
     border-left: 4px solid var(--header-icon-hover-color);
-    padding-left: 12px;
-    color: var(--sidebar-text-color);
+    padding-left: 10px;
 }
 
-/* Logo & titles */
+/* Logo */
 .logo-section {
     text-align: center;
     margin-bottom: 32px;
 }
 
 .logo {
-    height: 48px;
+    height: 80px;
+    max-width: calc(100% - 24px);
+    object-fit: contain;
 }
 
-.menu-title {
-    margin-left: 16px;
-    margin-bottom: 8px;
-    font-size: 11px;
-    letter-spacing: 1px;
-    color: var(--sidebar-text-color);
-    text-transform: uppercase;
-}
-
+/* Center icons when collapsed */
 .app-sidebar.collapsed .menu-link {
     justify-content: center;
     padding: 12px 0;
 }
 
-.link-text {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+.app-sidebar.collapsed nav {
+    padding: 0 8px;
 }
 
-/* Close “×” button: hidden desktop, visible mobile */
+/* Bottom logo */
+.bottom-logo {
+    position: absolute;
+    bottom: 16px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s;
+}
+
+.bottom-logo img {
+    height: 55px;
+    transition: transform 0.3s, max-width 0.3s;
+}
+
+/* ✅ Shrink logo into icon when collapsed (desktop) */
+@media (min-width: 769px) {
+    .app-sidebar.collapsed .bottom-logo img {
+        max-width: 55px;
+    }
+}
+
+/* Close button (mobile only) */
 .close-btn {
     display: none;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
     .app-sidebar {
         transform: translateX(-100%);
         width: 0;
         z-index: 1000;
+        max-width: 320px;
     }
 
     .app-sidebar.collapsed {
         transform: translateX(0);
-        width: 100%;
+        width: min(82vw, 320px);
     }
 
     .close-btn {
@@ -188,20 +230,40 @@ const props = defineProps({ collapsed: Boolean })
         right: 12px;
         background: none;
         border: none;
-        color: var(--sidebar-text-color);
         font-size: 24px;
         cursor: pointer;
     }
 
-    /* Always show text/titles on mobile */
+    /* Always show text on mobile */
     .link-text,
     .menu-title {
         display: block !important;
     }
 
-    .app-sidebar.collapsed .menu-link[data-v-6dec5f19] {
+    .app-sidebar.collapsed .menu-link {
         justify-content: left;
         padding: 16px 16px;
+    }
+
+    nav {
+        padding: 0 18px;
+    }
+}
+
+@media (max-width: 520px) {
+    .app-sidebar.collapsed {
+        width: 100vw;
+        max-width: none;
+    }
+
+    .bottom-logo {
+        position: static;
+        margin-top: 24px;
+        padding-bottom: 16px;
+    }
+
+    .app-sidebar {
+        overflow-y: auto;
     }
 }
 </style>

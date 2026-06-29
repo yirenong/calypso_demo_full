@@ -4,9 +4,30 @@
     padding: 0;
 }
 
+html,
+body {
+    width: 100%;
+    min-width: 320px;
+    min-height: 100%;
+}
+
 body {
     font-family: Arial, sans-serif;
     background: #f5f7fa;
+    overflow: hidden;
+}
+
+button,
+input,
+select,
+textarea {
+    max-width: 100%;
+}
+
+img,
+svg,
+canvas {
+    max-width: 100%;
 }
 
 .app {
@@ -100,4 +121,217 @@ body {
 .chart-full {
     width: 100%;
     height: 100%;
+}
+
+/* App-wide responsive foundations for the repeated dashboard patterns. */
+.page-header,
+.card-header,
+.trend-row,
+.overview-header,
+.fs-modal-header {
+    min-width: 0;
+}
+
+.grid,
+.kpi-grid,
+.charts-grid,
+.cards-grid,
+.settings-grid,
+.overview,
+.ov-charts,
+.two-col {
+    min-width: 0;
+}
+
+.card,
+.chart-card,
+.card-wrapper,
+.kpi,
+.ov-kpi,
+.metric-card {
+    min-width: 0;
+}
+
+.table-wrap {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+table {
+    min-width: max-content;
+}
+
+.chart-wrap {
+    min-width: 0;
+}
+
+.tab-nav,
+.sub-tab-nav,
+.trend-pickers,
+.top-controls,
+.granularity-buttons,
+.card-head-actions,
+.page-header-right,
+.modal-actions,
+.export-actions,
+.actions,
+.action-cell {
+    min-width: 0;
+    flex-wrap: wrap;
+}
+
+.chip,
+.gran-btn,
+.icon-btn,
+.download-button,
+.modal-btn,
+.export-actions button {
+    white-space: nowrap;
+}
+
+.modal,
+.export-modal,
+.bai-modal,
+.fs-modal {
+    max-width: min(96vw, 980px);
+}
+
+@media (max-width: 1280px) {
+    .kpi-grid {
+        grid-template-columns: repeat(2, minmax(220px, 1fr)) !important;
+    }
+
+    .charts-grid,
+    .ov-charts {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+@media (max-width: 900px) {
+    .page-header {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 10px !important;
+    }
+
+    .page-header-right,
+    .card-header,
+    .trend-row,
+    .trend-controls-row,
+    .top-controls,
+    .overview-header {
+        align-items: stretch !important;
+        justify-content: flex-start !important;
+        flex-wrap: wrap !important;
+        gap: 10px !important;
+    }
+
+    .kpi-grid,
+    .cards-grid,
+    .grid-2,
+    .grid-3 {
+        grid-template-columns: 1fr !important;
+    }
+
+    .chart-wrap {
+        height: clamp(240px, 52vh, 420px) !important;
+        min-height: 220px !important;
+    }
+
+    .top-blocks-chart {
+        height: clamp(190px, 34vh, 280px) !important;
+        min-height: 180px !important;
+    }
+
+    .card,
+    .card-wrapper {
+        padding: 12px !important;
+    }
+
+    .modal,
+    .export-modal,
+    .bai-modal {
+        width: min(94vw, 680px) !important;
+        max-height: 88vh !important;
+        overflow: auto !important;
+    }
+}
+
+@media (max-width: 640px) {
+    .page-title,
+    h1 {
+        font-size: clamp(1.35rem, 7vw, 2rem) !important;
+    }
+
+    h2 {
+        font-size: clamp(1.15rem, 5vw, 1.5rem) !important;
+    }
+
+    h3 {
+        font-size: 1rem !important;
+    }
+
+    .view-container {
+        padding: 10px !important;
+    }
+
+    .tab-nav,
+    .sub-tab-nav,
+    .trend-pickers,
+    .granularity-buttons,
+    .top-controls .left,
+    .top-controls .right,
+    .card-head-actions {
+        display: flex !important;
+        width: 100% !important;
+        gap: 8px !important;
+        overflow-x: auto !important;
+        padding-bottom: 2px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .chip,
+    .gran-btn {
+        min-height: 38px;
+        flex: 0 0 auto;
+    }
+
+    input.chip,
+    select.chip,
+    .trend-pickers input,
+    .trend-pickers select {
+        min-width: 128px;
+    }
+
+    .chart-wrap {
+        height: 260px !important;
+        min-height: 220px !important;
+    }
+
+    .fs-modal {
+        width: 100vw !important;
+        height: 100dvh !important;
+        max-width: none !important;
+        max-height: none !important;
+        border-radius: 0 !important;
+    }
+
+    .fs-modal-body {
+        min-height: 0 !important;
+        overflow: auto !important;
+    }
+
+    .modal-actions,
+    .export-actions {
+        justify-content: stretch !important;
+    }
+
+    .modal-actions button,
+    .export-actions button,
+    .download-button {
+        width: 100%;
+    }
 }

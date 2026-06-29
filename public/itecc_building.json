@@ -1,0 +1,378 @@
+{
+  "A": {
+    "ROOF": {
+      "name": "NAE-A-RF-24_624",
+      "base_name": "NAE-A-RF-24",
+      "type": "NAE",
+      "block": "A",
+      "level": "ROOF"
+    },
+    "L1": {
+      "name": "NIE-A-1-ADMIN_631",
+      "base_name": "NIE-A-1-ADMIN",
+      "type": "NIE",
+      "block": "A",
+      "level": "L1"
+    },
+    "L2": {
+      "name": "SNE-A-L2-10_510",
+      "base_name": "SNE-A-L2-10",
+      "type": "SNE",
+      "block": "A",
+      "level": "L2"
+    },
+    "L5": {
+      "name": "NCE-A-L5-01_625",
+      "base_name": "NCE-A-L5-01",
+      "type": "NCE",
+      "block": "A",
+      "level": "L5"
+    },
+    "L6": {
+      "name": "NCE-A-L6-03_627",
+      "base_name": "NCE-A-L6-03",
+      "type": "NCE",
+      "block": "A",
+      "level": "L6"
+    },
+    "L7": {
+      "name": "NCE-A-L7-05_629",
+      "base_name": "NCE-A-L7-05",
+      "type": "NCE",
+      "block": "A",
+      "level": "L7"
+    },
+    "L8": {
+      "name": "NCE-A-L8-06_630",
+      "base_name": "NCE-A-L8-06",
+      "type": "NCE",
+      "block": "A",
+      "level": "L8"
+    }
+  },
+  "B": {
+    "L1": {
+      "name": "BLK-B-L1-L5-PM_3151",
+      "base_name": "BLK-B-L1-L5-PM",
+      "type": "BLK",
+      "block": "B",
+      "level": "L1"
+    },
+    "L5": {
+      "name": "NAE-B-L5-03_523",
+      "base_name": "NAE-B-L5-03",
+      "type": "NAE",
+      "block": "B",
+      "level": "L5"
+    }
+  },
+  "C": {
+    "L1": {
+      "name": "BLK-C-L1-L3-PM_4131",
+      "base_name": "BLK-C-L1-L3-PM",
+      "type": "BLK",
+      "block": "C",
+      "level": "L1"
+    },
+    "L5": {
+      "name": "BLK-C-L5-L8-PM_4582",
+      "base_name": "BLK-C-L5-L8-PM",
+      "type": "BLK",
+      "block": "C",
+      "level": "L5"
+    }
+  },
+  "D": {
+    "L1": {
+      "name": "SunFull BACnet Server_5131",
+      "base_name": "SunFull BACnet Server",
+      "type": "SERVER",
+      "block": "D",
+      "level": "L1"
+    },
+    "L3": {
+      "name": "NAE-D-L3-06_546",
+      "base_name": "NAE-D-L3-06",
+      "type": "NAE",
+      "block": "D",
+      "level": "L3"
+    },
+    "L5": {
+      "name": "BLK-D-L5-L8-PM_5582",
+      "base_name": "BLK-D-L5-L8-PM",
+      "type": "BLK",
+      "block": "D",
+      "level": "L5"
+    },
+    "L7": {
+      "name": "NAE-D-L7-08_548",
+      "base_name": "NAE-D-L7-08",
+      "type": "NAE",
+      "block": "D",
+      "level": "L7"
+    }
+  },
+  "E": {
+    "L1": {
+      "name": "BLK-E-L1-L5-PM_6151",
+      "base_name": "BLK-E-L1-L5-PM",
+      "type": "BLK",
+      "block": "E",
+      "level": "L1"
+    },
+    "L3": {
+      "name": "NAE-E-L3-05_555",
+      "base_name": "NAE-E-L3-05",
+      "type": "NAE",
+      "block": "E",
+      "level": "L3"
+    },
+    "L5": {
+      "name": "BLK-E-L5-L8-PM_6582",
+      "base_name": "BLK-E-L5-L8-PM",
+      "type": "BLK",
+      "block": "E",
+      "level": "L5"
+    },
+    "L6": {
+      "name": "NAE-E-L6-06_556",
+      "base_name": "NAE-E-L6-06",
+      "type": "NAE",
+      "block": "E",
+      "level": "L6"
+    },
+    "L7": {
+      "name": "NAE-E-L7-07_557",
+      "base_name": "NAE-E-L7-07",
+      "type": "NAE",
+      "block": "E",
+      "level": "L7"
+    }
+  },
+  "F": {
+    "L1": {
+      "name": "NIE-F-1_566",
+      "base_name": "NIE-F-1",
+      "type": "NIE",
+      "block": "F",
+      "level": "L1"
+    },
+    "L2": {
+      "name": "BLK-F-L2-L3-PM_7231",
+      "base_name": "BLK-F-L2-L3-PM",
+      "type": "BLK",
+      "block": "F",
+      "level": "L2"
+    },
+    "L3": {
+      "name": "NAE-F-L3-05_565",
+      "base_name": "NAE-F-L3-05",
+      "type": "NAE",
+      "block": "F",
+      "level": "L3"
+    },
+    "L5": {
+      "name": "BLK-F-L5-PM_7502",
+      "base_name": "BLK-F-L5-PM",
+      "type": "BLK",
+      "block": "F",
+      "level": "L5"
+    }
+  },
+  "G": {
+    "L1": {
+      "name": "NIE-G-1_574",
+      "base_name": "NIE-G-1",
+      "type": "NIE",
+      "block": "G",
+      "level": "L1"
+    },
+    "L2": {
+      "name": "BLK-G-L2-L4-PM_8241",
+      "base_name": "BLK-G-L2-L4-PM",
+      "type": "BLK",
+      "block": "G",
+      "level": "L2"
+    },
+    "L3": {
+      "name": "SNE-G-L3-03_500",
+      "base_name": "SNE-G-L3-03",
+      "type": "SNE",
+      "block": "G",
+      "level": "L3"
+    }
+  },
+  "H": {
+    "L1": {
+      "name": "BLK-H-L1-L4-PM_9141",
+      "base_name": "BLK-H-L1-L4-PM",
+      "type": "BLK",
+      "block": "H",
+      "level": "L1"
+    },
+    "L3": {
+      "name": "NAE-H-L3-06_586",
+      "base_name": "NAE-H-L3-06",
+      "type": "NAE",
+      "block": "H",
+      "level": "L3"
+    },
+    "L5": {
+      "name": "BLK-H-L5-L8-PM_9582",
+      "base_name": "BLK-H-L5-L8-PM",
+      "type": "BLK",
+      "block": "H",
+      "level": "L5"
+    },
+    "L6": {
+      "name": "NAE-H-L6-07_587",
+      "base_name": "NAE-H-L6-07",
+      "type": "NAE",
+      "block": "H",
+      "level": "L6"
+    },
+    "L7": {
+      "name": "NAE-H-L7-08_588",
+      "base_name": "NAE-H-L7-08",
+      "type": "NAE",
+      "block": "H",
+      "level": "L7"
+    }
+  },
+  "J": {
+    "L1": {
+      "name": "NIE-J-1_598",
+      "base_name": "NIE-J-1",
+      "type": "NIE",
+      "block": "J",
+      "level": "L1"
+    },
+    "L2": {
+      "name": "BLK-J-L2-L4-PM_1024",
+      "base_name": "BLK-J-L2-L4-PM",
+      "type": "BLK",
+      "block": "J",
+      "level": "L2"
+    },
+    "L3": {
+      "name": "NAE-J-L3-04_594",
+      "base_name": "NAE-J-L3-04",
+      "type": "NAE",
+      "block": "J",
+      "level": "L3"
+    },
+    "L4": {
+      "name": "NAE-J-L4-05_595",
+      "base_name": "NAE-J-L4-05",
+      "type": "NAE",
+      "block": "J",
+      "level": "L4"
+    },
+    "L5": {
+      "name": "BLK-J-L5-L8-PM_1058",
+      "base_name": "BLK-J-L5-L8-PM",
+      "type": "BLK",
+      "block": "J",
+      "level": "L5"
+    },
+    "L7": {
+      "name": "NAE-J-L7-06_596",
+      "base_name": "NAE-J-L7-06",
+      "type": "NAE",
+      "block": "J",
+      "level": "L7"
+    }
+  },
+  "K": {
+    "L1": {
+      "name": "NIE-K-1_608",
+      "base_name": "NIE-K-1",
+      "type": "NIE",
+      "block": "K",
+      "level": "L1"
+    },
+    "L2": {
+      "name": "BLK-K-L2-L4-PM_1124",
+      "base_name": "BLK-K-L2-L4-PM",
+      "type": "BLK",
+      "block": "K",
+      "level": "L2"
+    },
+    "L3": {
+      "name": "NAE-K-L3-04_604",
+      "base_name": "NAE-K-L3-04",
+      "type": "NAE",
+      "block": "K",
+      "level": "L3"
+    },
+    "L5": {
+      "name": "BLK-K-L5-L8-PM_1158",
+      "base_name": "BLK-K-L5-L8-PM",
+      "type": "BLK",
+      "block": "K",
+      "level": "L5"
+    }
+  },
+  "AD": {
+    "L1": {
+      "name": "BLK-AD-L1-L2-PM_1121",
+      "base_name": "BLK-AD-L1-L2-PM",
+      "type": "BLK",
+      "block": "AD",
+      "level": "L1"
+    },
+    "L3": {
+      "name": "BLK-AD-L3-L4-PM_1342",
+      "base_name": "BLK-AD-L3-L4-PM",
+      "type": "BLK",
+      "block": "AD",
+      "level": "L3"
+    },
+    "L5": {
+      "name": "BLK-AD-L5-L6-PM_1563",
+      "base_name": "BLK-AD-L5-L6-PM",
+      "type": "BLK",
+      "block": "AD",
+      "level": "L5"
+    },
+    "L7": {
+      "name": "BLK-AD-L7-L8-PM_1784",
+      "base_name": "BLK-AD-L7-L8-PM",
+      "type": "BLK",
+      "block": "AD",
+      "level": "L7"
+    }
+  },
+  "AU": {
+    "L1": {
+      "name": "BLK-AU-L1-L2-PM_2121",
+      "base_name": "BLK-AU-L1-L2-PM",
+      "type": "BLK",
+      "block": "AU",
+      "level": "L1"
+    },
+    "L3": {
+      "name": "BLK-AU-L3-L4-PM_2342",
+      "base_name": "BLK-AU-L3-L4-PM",
+      "type": "BLK",
+      "block": "AU",
+      "level": "L3"
+    },
+    "L5": {
+      "name": "BLK-AU-L5-L8-PM_1258",
+      "base_name": "BLK-AU-L5-L8-PM",
+      "type": "BLK",
+      "block": "AU",
+      "level": "L5"
+    }
+  },
+  "HQ": {
+    "L1": {
+      "name": "Chiller_ITE_1210_1210",
+      "base_name": "Chiller_ITE_1210",
+      "type": "CHILLER",
+      "block": "HQ",
+      "level": "L1"
+    }
+  }
+}
