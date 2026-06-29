@@ -1,5 +1,5 @@
 <template>
-    <WidgetCard :title="title">
+    <WidgetCard v-if="hasChrome" :title="title">
         <template #icon>
             <i class="fas fa-chart-line"></i>
         </template>
@@ -8,23 +8,27 @@
             <slot name="actions" />
         </template>
     </WidgetCard>
+    <div v-else class="line-chart-plain">
+        <canvas ref="canvas"></canvas>
+    </div>
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { computed, ref, onMounted, watch } from 'vue'
 import { Chart, registerables } from 'chart.js'
 import WidgetCard from './WidgetCard.vue'
 
 
 Chart.register(...registerables)
 const props = defineProps({
-    title: { type: String, required: true },
+    title: { type: String, default: '' },
     chartData: { type: Object, required: true },
     options: { type: Object, default: () => ({ responsive: true }) }
 })
 
 const canvas = ref(null)
 let chartInstance = null
+const hasChrome = computed(() => props.title.trim().length > 0)
 
 onMounted(() => {
     if (canvas.value && props.chartData && props.chartData.labels) {
@@ -45,7 +49,15 @@ watch(() => props.chartData, (newData) => {
 </script>
 
 <style scoped>
+.line-chart-plain {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+}
+
 canvas {
+    display: block;
     width: 100%;
     height: 100%;
 }
